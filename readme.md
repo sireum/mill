@@ -17,5 +17,11 @@ To build:
 To build:
 
 ```bash
-./build-patch.sh
+./build-patch.sh <mill-release-version>
+```
+
+For example:
+
+```bash
+./build-patch.sh 0.1.3
 ```
