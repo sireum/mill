@@ -11,3 +11,5 @@ cp out/dev/assembly/dest/mill ../mill
 cd ..
 chmod +x mill
 TERM=xterm-color ./mill -i sireum.jar
+rm -fR out
+
