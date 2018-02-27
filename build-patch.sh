@@ -17,7 +17,7 @@ cd ..
 rm -fR temp Manifest.txt mill
 echo -en '#!/usr/bin/env sh\nexec java -DMILL_VERSION=' > header
 echo -en $1 >> header
-echo -e '$JAVA_OPTS -cp "$0" mill.Main "$@"\n' >> header
+echo -e ' $JAVA_OPTS -cp "$0" mill.Main "$@"\n' >> header
 cat header mill.jar > mill
 rm -fR header mill.jar out
 chmod +x mill
