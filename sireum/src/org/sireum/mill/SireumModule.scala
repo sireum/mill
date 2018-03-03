@@ -30,14 +30,14 @@ import mill.scalajslib._
 import mill.scalalib.publish._
 import ammonite.ops._
 
-trait SireumModule extends ScalaModule {
+trait SireumModule extends mill.Module {
 
-  final override def scalaVersion = T { SireumModule.scalaVersion }
+  final def scalaVer = SireumModule.scalaVersion
 
-  final override def javacOptions =
+  final def javacOpts =
     Seq("-source", "1.8", "-target", "1.8", "-encoding", "utf8")
 
-  final override def scalacOptions =
+  final def scalacOpts =
     Seq(
       "-target:jvm-1.8",
       "-deprecation",
@@ -63,7 +63,8 @@ object SireumModule {
     import java.io._
     def findPropFile(): String = {
       def err(): Nothing = {
-        throw new Error("Need to supply property 'org.sireum.version.file', property 'org.sireum.home', or 'SIREUM_HOME' env var.")
+        throw new Error(
+          "Need to supply property 'org.sireum.version.file', property 'org.sireum.home', or 'SIREUM_HOME' env var.")
       }
       def checkFile(f: File): String = {
         if (f.isFile && f.canRead) return f.getCanonicalFile.getAbsolutePath
@@ -97,7 +98,8 @@ object SireumModule {
   private def property(key: String): String = {
     val value = properties.getProperty(key)
     if (value == null) {
-      throw new Error(s"Need to supply property '$key' in '${propertiesFile.getCanonicalPath}'.")
+      throw new Error(
+        s"Need to supply property '$key' in '${propertiesFile.getCanonicalPath}'.")
     }
     value
   }
@@ -124,6 +126,12 @@ object SireumModule {
 
     trait Jvm extends ScalaModule with SireumModule { outer =>
 
+      final override def scalaVersion = T { scalaVer }
+
+      final override def javacOptions = T { javacOpts }
+
+      final override def scalacOptions = T { scalacOpts }
+
       def platformSegment: String
 
       def deps: Seq[Jvm]
@@ -134,7 +142,8 @@ object SireumModule {
 
       def testFrameworks: Seq[String]
 
-      final override def sources = T.sources(millSourcePath / "src" / "main" / "scala")
+      final override def sources =
+        T.sources(millSourcePath / "src" / "main" / "scala")
 
       def tests: Tests
 
@@ -157,6 +166,12 @@ object SireumModule {
     }
 
     trait Js extends ScalaJSModule with SireumModule { outer =>
+
+      final override def scalaVersion = T { scalaVer }
+
+      final override def javacOptions = T { javacOpts }
+
+      final override def scalacOptions = T { scalacOpts }
 
       def deps: Seq[Js]
 
@@ -181,13 +196,15 @@ object SireumModule {
         final override def ivyDeps = T { outer.testIvyDeps }
 
         final override def scalacPluginIvyDeps = T {
-          outer.testScalacPluginIvyDeps
+          outer.testScalacPluginIvyDeps ++ super.scalacPluginIvyDeps()
         }
 
         final override def testFrameworks = T { outer.testFrameworks }
 
         final override def sources =
-          T.sources(millSourcePath / "scala", millSourcePath / up / up / up / "shared" / "src" / "test" / "scala")
+          T.sources(
+            millSourcePath / "scala",
+            millSourcePath / up / up / up / "shared" / "src" / "test" / "scala")
       }
 
     }
@@ -202,8 +219,12 @@ object SireumModule {
         description = description,
         organization = "org.sireum",
         url = s"https://github.com/sireum/$subUrl",
-        licenses = Seq(License("BSD-2 License", s"https://github.com/sireum/$subUrl/blob/master/license.txt")),
-        scm = SCM(s"git://github.com/sireum/$subUrl.git", s"scm:git://github.com/sireum/$subUrl.git"),
+        licenses = Seq(
+          License(
+            "BSD-2 License",
+            s"https://github.com/sireum/$subUrl/blob/master/license.txt")),
+        scm = SCM(s"git://github.com/sireum/$subUrl.git",
+                  s"scm:git://github.com/sireum/$subUrl.git"),
         developers = developers
       )
     }
@@ -328,7 +349,8 @@ object SireumModule {
 
       object tests extends Tests {
 
-        final override def moduleDeps = Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+        final override def moduleDeps =
+          Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
 
       }
     }
@@ -349,11 +371,14 @@ object SireumModule {
 
       override def moduleDeps = mDeps
 
-      final def mDeps = Seq(shared) ++ (for (dep <- outer.deps) yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps
+      final def mDeps =
+        Seq(shared) ++ (for (dep <- outer.deps)
+          yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps
 
       object tests extends Tests {
 
-        final override def moduleDeps = Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+        final override def moduleDeps =
+          Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
 
       }
     }
@@ -362,7 +387,9 @@ object SireumModule {
 
       final override def ivyDeps = T { outer.ivyDeps }
 
-      final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps }
+      final override def scalacPluginIvyDeps = T {
+        outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()
+      }
 
       final override def testIvyDeps = outer.testIvyDeps ++ outer.jsTestIvyDeps
 
@@ -378,7 +405,8 @@ object SireumModule {
 
       object tests extends Tests {
 
-        final override def moduleDeps = Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+        final override def moduleDeps =
+          Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
 
       }
     }
@@ -423,7 +451,8 @@ object SireumModule {
 
       object tests extends Tests {
 
-        final override def moduleDeps = Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+        final override def moduleDeps =
+          Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
 
       }
 
@@ -437,7 +466,9 @@ object SireumModule {
 
       final override def ivyDeps = T { outer.ivyDeps }
 
-      final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps }
+      final override def scalacPluginIvyDeps = T {
+        outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()
+      }
 
       final override def testIvyDeps = outer.testIvyDeps ++ outer.jvmTestIvyDeps
 
@@ -453,7 +484,9 @@ object SireumModule {
 
       override def moduleDeps = mDeps
 
-      final def mDeps = Seq(shared) ++ (for (dep <- outer.deps) yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps
+      final def mDeps =
+        Seq(shared) ++ (for (dep <- outer.deps)
+          yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps
 
       object tests extends Tests {
 
@@ -468,13 +501,12 @@ object SireumModule {
 
       final override def subUrl = outer.subUrl
 
-      final override def description: String =
-        CrossJvmJsPublish.this.description
+      final override def description: String = outer.description
 
-      final override def ivyDeps = T { CrossJvmJsPublish.this.ivyDeps }
+      final override def ivyDeps = T { outer.ivyDeps }
 
       final override def scalacPluginIvyDeps = T {
-        CrossJvmJsPublish.this.scalacPluginIvyDeps
+        outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()
       }
 
       final override def testIvyDeps = outer.testIvyDeps ++ outer.jsTestIvyDeps
@@ -483,9 +515,9 @@ object SireumModule {
 
       final override def testFrameworks = outer.jsTestFrameworks
 
-      final override def developers = CrossJvmJsPublish.this.developers
+      final override def developers = outer.developers
 
-      final override def publishVersion = CrossJvmJsPublish.this.publishVersion
+      final override def publishVersion = outer.publishVersion
 
       final override def deps = Seq()
 
