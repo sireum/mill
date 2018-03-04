@@ -205,6 +205,8 @@ object SireumModule {
           T.sources(
             millSourcePath / "scala",
             millSourcePath / up / up / up / "shared" / "src" / "test" / "scala")
+
+        final override def nodeJSConfig = T { outer.nodeJSConfig() }
       }
 
     }
@@ -220,11 +222,13 @@ object SireumModule {
         organization = "org.sireum",
         url = s"https://github.com/sireum/$subUrl",
         licenses = Seq(
-          License(
-            "BSD-2 License",
-            s"https://github.com/sireum/$subUrl/blob/master/license.txt")),
-        scm = SCM(s"git://github.com/sireum/$subUrl.git",
-                  s"scm:git://github.com/sireum/$subUrl.git"),
+          License("BSD 2-Clause \"Simplified\" License",
+            "BSD-2-Clause",
+            s"https://github.com/sireum/$subUrl/blob/master/license.txt",
+            isOsiApproved = true,
+            isFsfLibre = false,
+            "repo")),
+        versionControl = VersionControl.github("sireum", subUrl),
         developers = developers
       )
     }
