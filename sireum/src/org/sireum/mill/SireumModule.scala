@@ -200,6 +200,10 @@ object SireumModule {
         millSourcePath / up / "shared" / "src" / "main" / "scala",
       )
 
+      final override def nodeJSConfig = T {
+        NodeJSConfig(args = List("--max-old-space-size=4096"))
+      }
+
       def tests: Tests
 
       trait Tests extends super.Tests {
@@ -219,6 +223,8 @@ object SireumModule {
           T.sources(
             millSourcePath / "scala",
             millSourcePath / up / up / up / "shared" / "src" / "test" / "scala")
+
+        final override def nodeJSConfig = T { outer.nodeJSConfig() }
       }
 
     }
