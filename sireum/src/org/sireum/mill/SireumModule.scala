@@ -120,6 +120,22 @@ object SireumModule {
 
   lazy val diffVersion = property("org.sireum.version.diff")
 
+  lazy val scalaJsDomVersion = property("org.sireum.version.scalajsdom")
+
+  lazy val scalaJsJQueryVersion = property("org.sireum.version.scalajsjquery")
+
+  lazy val scalaTagsVersion = property("org.sireum.version.scalatags")
+
+  lazy val parboiled2Version = property("org.sireum.version.parboiled2")
+
+  lazy val java8CompatVersion = property("org.sireum.version.java8compat")
+
+  lazy val ammoniteOpsVersion = property("org.sireum.version.ammonite-ops")
+
+  lazy val utestVersion = property("org.sireum.version.utest")
+
+  lazy val nuProcessVersion = property("org.sireum.version.nuprocess")
+
   sealed trait Project
 
   object Project {
