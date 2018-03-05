@@ -1,5 +1,7 @@
 /out
 /mill
+/mill-standalone
+/mill-release
 /git
 .idea
 .idea_modules
