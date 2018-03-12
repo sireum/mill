@@ -112,8 +112,6 @@ object SireumModule {
 
   lazy val scalaTestVersion = property("org.sireum.version.scalatest")
 
-  lazy val scalaJsonVersion = property("org.sireum.version.scalajson")
-
   lazy val spireVersion = property("org.sireum.version.spire")
 
   lazy val scalaMetaVersion = property("org.sireum.version.scalameta")
@@ -343,6 +341,40 @@ object SireumModule {
     final override def platformSegment = "js"
 
     final override def scalaJSVersion = T { scalaJsVersion }
+  }
+
+  trait JvmOnly extends Jvm { outer =>
+
+    def crossDeps: Seq[CrossJvmJs]
+
+    override def moduleDeps = mDeps
+
+    final def mDeps =
+      (for (dep <- crossDeps)
+        yield Seq(dep.shared, dep.jvm)).flatten ++ deps
+
+    object tests extends Tests {
+
+      final override def moduleDeps =
+        Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+
+    }
+  }
+
+  trait JsOnly extends Js { outer =>
+
+    def crossDeps: Seq[CrossJvmJs]
+
+    final override def moduleDeps = mDeps
+
+    final def mDeps = (for (dep <- crossDeps) yield dep.js) ++ deps
+
+    object tests extends Tests {
+
+      final override def moduleDeps =
+        Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+
+    }
   }
 
   trait CrossJvmJs extends Project.CrossJvmJs { outer =>
