@@ -197,7 +197,7 @@ object SireumModule {
 
       final override def sources = T.sources(
         millSourcePath / "src" / "main" / "scala",
-        millSourcePath / up / "shared" / "src" / "main" / "scala",
+        millSourcePath / up / "shared" / "src" / "main" / "scala"
       )
 
       final override def nodeJSConfig = T {
