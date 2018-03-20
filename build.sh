@@ -11,15 +11,13 @@ if [[ ! -x $SCRIPT_DIR/mill-standalone ]]; then
   fi
 fi
 echo "Shallow cloning mill master branch ..."
-git clone https://github.com/lihaoyi/mill.git git
+git clone --depth=1 https://github.com/lihaoyi/mill.git git
 echo "Building mill with SireumModule ..."
 mkdir -p git/scalajslib/src/org/sireum/mill
 cp sireum/src/org/sireum/mill/SireumModule.scala git/scalajslib/src/org/sireum/mill/
 cd git
-git add --all
-git commit -m "Added SireumModule."
-$SCRIPT_DIR/mill-standalone all __.publishLocal release
-cp out/release/dest/mill $SCRIPT_DIR/mill
+$SCRIPT_DIR/mill-standalone dev.assembly
+cp out/dev/assembly/dest/mill $SCRIPT_DIR/mill
 cd $SCRIPT_DIR
 chmod +x mill
 rm -fR ~/.mill
