@@ -61,34 +61,10 @@ object SireumModule {
 
   lazy val (properties, propertiesFile) = {
     import java.io._
-    def findPropFile(): String = {
-      def err(): Nothing = {
-        throw new Error(
-          "Need to supply property 'org.sireum.version.file', property 'org.sireum.home', or 'SIREUM_HOME' env var.")
-      }
-      def checkFile(f: File): String = {
-        if (f.isFile && f.canRead) return f.getCanonicalFile.getAbsolutePath
-        err()
-      }
-      val propFile = System.getProperty("org.sireum.version.file")
-      if (propFile == null) {
-        var sireumHome = System.getProperty("org.sireum.home")
-        if (sireumHome != null) {
-          return checkFile(new File(sireumHome, "versions.properties"))
-        }
-        sireumHome = System.getenv("SIREUM_HOME")
-        if (sireumHome != null) {
-          return checkFile(new File(sireumHome, "versions.properties"))
-        }
-        err()
-      } else {
-        checkFile(new File(propFile))
-      }
-    }
-    val propFile = findPropFile()
+    val propFile = pwd / "versions.properties"
     println(s"Loading Sireum dependency versions from $propFile ...")
     val ps = new java.util.Properties
-    val f = new File(propFile)
+    val f = propFile.toIO
     val fr = new FileReader(f)
     ps.load(fr)
     fr.close()
