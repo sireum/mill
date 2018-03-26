@@ -142,13 +142,13 @@ object SireumModule {
         final override def millSourcePath =
           super.millSourcePath / up / up / platformSegment / "src" / "test"
 
-        final override def ivyDeps = T { outer.testIvyDeps }
+        final override def ivyDeps = T { outer.testIvyDeps.distinct }
 
         final override def scalacPluginIvyDeps = T {
           outer.testScalacPluginIvyDeps
         }
 
-        final override def testFrameworks = T { outer.testFrameworks }
+        final override def testFrameworks = T { outer.testFrameworks.distinct }
 
         final override def sources = T.sources(millSourcePath / "scala")
       }
@@ -187,13 +187,13 @@ object SireumModule {
         final override def millSourcePath =
           super.millSourcePath / up / up / "js" / "src" / "test"
 
-        final override def ivyDeps = T { outer.testIvyDeps }
+        final override def ivyDeps = T { outer.testIvyDeps.distinct }
 
         final override def scalacPluginIvyDeps = T {
-          outer.testScalacPluginIvyDeps ++ super.scalacPluginIvyDeps()
+          (outer.testScalacPluginIvyDeps ++ super.scalacPluginIvyDeps()).distinct
         }
 
-        final override def testFrameworks = T { outer.testFrameworks }
+        final override def testFrameworks = T { outer.testFrameworks.distinct }
 
         final override def sources =
           T.sources(
@@ -334,13 +334,13 @@ object SireumModule {
     override def moduleDeps = mDeps
 
     final def mDeps =
-      (for (dep <- crossDeps)
-        yield Seq(dep.shared, dep.jvm)).flatten ++ deps
+      ((for (dep <- crossDeps)
+        yield Seq(dep.shared, dep.jvm)).flatten ++ deps).distinct
 
     object tests extends Tests {
 
       final override def moduleDeps =
-        Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+        (Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
 
     }
   }
@@ -353,12 +353,12 @@ object SireumModule {
 
     final override def moduleDeps = mDeps
 
-    final def mDeps = (for (dep <- crossDeps) yield dep.js) ++ deps
+    final def mDeps = ((for (dep <- crossDeps) yield dep.js) ++ deps).distinct
 
     object tests extends Tests {
 
       final override def moduleDeps =
-        Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+        (Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
 
     }
   }
@@ -367,54 +367,54 @@ object SireumModule {
 
     object shared extends Shared {
 
-      final override def ivyDeps = T { outer.ivyDeps }
+      final override def ivyDeps = T { outer.ivyDeps.distinct }
 
-      final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps }
+      final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps.distinct }
 
-      final override def testIvyDeps = outer.testIvyDeps ++ outer.jvmTestIvyDeps
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmTestIvyDeps).distinct
 
-      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps
+      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
-      final override def testFrameworks = outer.jvmTestFrameworks
+      final override def testFrameworks = outer.jvmTestFrameworks.distinct
 
       final override def deps = Seq()
 
       final override def moduleDeps = mDeps
 
-      final def mDeps = for (dep <- outer.deps) yield dep.shared
+      final def mDeps = (for (dep <- outer.deps) yield dep.shared).distinct
 
       object tests extends Tests {
 
         final override def moduleDeps =
-          Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+          (Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
 
       }
     }
 
     object jvm extends Jvm {
 
-      final override def ivyDeps = T { outer.ivyDeps }
+      final override def ivyDeps = T { outer.ivyDeps.distinct }
 
-      final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps }
+      final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps.distinct }
 
-      final override def testIvyDeps = outer.testIvyDeps ++ outer.jvmTestIvyDeps
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmTestIvyDeps).distinct
 
-      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps
+      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
-      final override def testFrameworks = outer.jvmTestFrameworks
+      final override def testFrameworks = outer.jvmTestFrameworks.distinct
 
       final override def deps = Seq()
 
       override def moduleDeps = mDeps
 
       final def mDeps =
-        Seq(shared) ++ (for (dep <- outer.deps)
-          yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps
+        (Seq(shared) ++ (for (dep <- outer.deps)
+          yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps).distinct
 
       object tests extends Tests {
 
         final override def moduleDeps =
-          Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+          (Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
 
       }
     }
@@ -424,25 +424,25 @@ object SireumModule {
       final override def ivyDeps = T { outer.ivyDeps }
 
       final override def scalacPluginIvyDeps = T {
-        outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()
+        (outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()).distinct
       }
 
-      final override def testIvyDeps = outer.testIvyDeps ++ outer.jsTestIvyDeps
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jsTestIvyDeps).distinct
 
-      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps
+      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
-      final override def testFrameworks = outer.jsTestFrameworks
+      final override def testFrameworks = outer.jsTestFrameworks.distinct
 
       final override def deps = Seq()
 
       final override def moduleDeps = mDeps
 
-      final def mDeps = (for (dep <- outer.deps) yield dep.js) ++ jsDeps
+      final def mDeps = ((for (dep <- outer.deps) yield dep.js) ++ jsDeps).distinct
 
       object tests extends Tests {
 
         final override def moduleDeps =
-          Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+          (Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
 
       }
     }
@@ -465,17 +465,17 @@ object SireumModule {
 
       final override def description: String = outer.description
 
-      final override def ivyDeps = T { outer.ivyDeps }
+      final override def ivyDeps = T { outer.ivyDeps.distinct }
 
-      final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps }
+      final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps.distinct }
 
-      final override def testIvyDeps = outer.testIvyDeps ++ outer.jvmTestIvyDeps
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmTestIvyDeps).distinct
 
-      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps
+      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
-      final override def testFrameworks = outer.jvmTestFrameworks
+      final override def testFrameworks = outer.jvmTestFrameworks.distinct
 
-      final override def developers = outer.developers
+      final override def developers = outer.developers.distinct
 
       final override def publishVersion = outer.publishVersion
 
@@ -483,12 +483,12 @@ object SireumModule {
 
       final override def moduleDeps = mDeps
 
-      final def mDeps = for (dep <- outer.deps) yield dep.shared
+      final def mDeps = (for (dep <- outer.deps) yield dep.shared).distinct
 
       object tests extends Tests {
 
         final override def moduleDeps =
-          Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+          (Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
 
       }
 
@@ -500,19 +500,19 @@ object SireumModule {
 
       final override def description: String = outer.description
 
-      final override def ivyDeps = T { outer.ivyDeps }
+      final override def ivyDeps = T { outer.ivyDeps.distinct }
 
       final override def scalacPluginIvyDeps = T {
-        outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()
+        (outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()).distinct
       }
 
-      final override def testIvyDeps = outer.testIvyDeps ++ outer.jvmTestIvyDeps
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmTestIvyDeps).distinct
 
-      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps
+      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
-      final override def testFrameworks = outer.jvmTestFrameworks
+      final override def testFrameworks = outer.jvmTestFrameworks.distinct
 
-      final override def developers = outer.developers
+      final override def developers = outer.developers.distinct
 
       final override def publishVersion = outer.publishVersion
 
@@ -521,13 +521,13 @@ object SireumModule {
       override def moduleDeps = mDeps
 
       final def mDeps =
-        Seq(shared) ++ (for (dep <- outer.deps)
-          yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps
+        (Seq(shared) ++ (for (dep <- outer.deps)
+          yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps).distinct
 
       object tests extends Tests {
 
         final override def moduleDeps =
-          Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+          (Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
 
       }
 
@@ -539,19 +539,19 @@ object SireumModule {
 
       final override def description: String = outer.description
 
-      final override def ivyDeps = T { outer.ivyDeps }
+      final override def ivyDeps = T { outer.ivyDeps.distinct }
 
       final override def scalacPluginIvyDeps = T {
-        outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()
+        (outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()).distinct
       }
 
-      final override def testIvyDeps = outer.testIvyDeps ++ outer.jsTestIvyDeps
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jsTestIvyDeps).distinct
 
-      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps
+      final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
-      final override def testFrameworks = outer.jsTestFrameworks
+      final override def testFrameworks = outer.jsTestFrameworks.distinct
 
-      final override def developers = outer.developers
+      final override def developers = outer.developers.distinct
 
       final override def publishVersion = outer.publishVersion
 
@@ -559,16 +559,22 @@ object SireumModule {
 
       final override def moduleDeps = mDeps
 
-      final def mDeps = (for (dep <- outer.deps) yield dep.js) ++ jsDeps
+      final def mDeps = ((for (dep <- outer.deps) yield dep.js) ++ jsDeps).distinct
 
       object tests extends Tests {
 
         final override def moduleDeps =
-          Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten
+          (Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
 
       }
     }
 
+  }
+
+  implicit class AggDistinct[T](val agg: Agg[T]) extends AnyVal {
+    def distinct: Agg[T] = {
+      Agg.empty ++ agg.toSeq.distinct
+    }
   }
 
 }
