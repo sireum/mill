@@ -10,7 +10,7 @@ else
 fi
 export SCRIPT_DIR=$( cd "$( dirname "$0" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
-echo "Downloding mill $MILL_VERSION ..."
+echo "Downloading mill $MILL_VERSION ..."
 rm -fR $SCRIPT_DIR/mill-release
 curl -sLo mill-release https://github.com/lihaoyi/mill/releases/download/$1/$MILL_VERSION
 chmod +x mill-release
