@@ -4,7 +4,7 @@ cd $SCRIPT_DIR
 rm -fR mill git out
 if [[ ! -x $SCRIPT_DIR/mill-standalone ]]; then
   echo "Building mill-standalone first ..."
-  bash $SCRIPT_DIR/build-standalone.sh $*
+  bash $SCRIPT_DIR/build-standalone.sh
   code=$?
   if [[ $code -ne 0 ]]; then
     exit $code

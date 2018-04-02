@@ -12,19 +12,7 @@ Latest version is available [here](http://files.sireum.org/mill-standalone).
 To build:
 
 ```bash
-./build-standalone.sh <mill-release-version> [<num-sha6>]
-```
-
-For example:
-
-```bash
-./build-standalone.sh 0.1.4
-```
-
-or 
-
-```bash
-./build-standalone.sh 0.1.4 23-55ee6e
+./build-standalone.sh
 ```
 
 This produces `mill-standalone`, and the mill release version is stored as 

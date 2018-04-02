@@ -1,18 +1,15 @@
 #!/bin/bash
-if [[ -z $1 ]]; then
-  echo "Please specify mill version to use"
-  exit -1
-fi
-if [[ -z $2 ]]; then
-  export MILL_VERSION=$1
-else
-  export MILL_VERSION=$1-$2
-fi
 export SCRIPT_DIR=$( cd "$( dirname "$0" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
+IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
+if [[ "${ver[1]}" == "" ]]; then
+  MILL_VERSION=${ver[0]}
+else
+  MILL_VERSION=${ver[0]}-${ver[1]}
+fi
 echo "Downloading mill $MILL_VERSION ..."
 rm -fR $SCRIPT_DIR/mill-release
-curl -sLo mill-release https://github.com/lihaoyi/mill/releases/download/$1/$MILL_VERSION
+curl -sLo mill-release https://github.com/lihaoyi/mill/releases/download/${ver[0]}/$MILL_VERSION
 chmod +x mill-release
 echo "Building SireumModule ..."
 $SCRIPT_DIR/mill-release -i sireum.jar
