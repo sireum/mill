@@ -5,5 +5,5 @@ object sireum extends ScalaModule {
 
   final override def scalaVersion = T { "2.12.4" }
 
-  final override def ivyDeps = T { Agg(ivy"com.lihaoyi::mill-scalajslib:0.1.7-26-b31b2e") }
+  final override def ivyDeps = T { Agg(ivy"com.lihaoyi::mill-scalajslib:0.1.7-30-f972d7") }
 }
