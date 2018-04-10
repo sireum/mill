@@ -10,8 +10,8 @@ if [[ ! -x $SCRIPT_DIR/mill-standalone ]]; then
     exit $code
   fi
 fi
-echo "Shallow cloning mill master branch ..."
-git clone --depth=1 https://github.com/lihaoyi/mill.git git
+echo "Cloning mill master branch ..."
+git clone https://github.com/lihaoyi/mill.git git
 echo "Building mill with SireumModule ..."
 mkdir -p git/scalajslib/src/org/sireum/mill
 cp sireum/src/org/sireum/mill/SireumModule.scala git/scalajslib/src/org/sireum/mill/
