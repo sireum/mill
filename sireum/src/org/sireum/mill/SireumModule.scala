@@ -106,8 +106,6 @@ object SireumModule {
 
   lazy val ammoniteOpsVersion = property("org.sireum.version.ammonite-ops")
 
-  lazy val sourceCodeVersion = property("org.sireum.version.sourcecode")
-
   lazy val utestVersion = property("org.sireum.version.utest")
 
   lazy val nuProcessVersion = property("org.sireum.version.nuprocess")
