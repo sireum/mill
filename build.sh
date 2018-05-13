@@ -21,6 +21,13 @@ cp out/dev/assembly/dest/mill $SCRIPT_DIR/mill
 cd $SCRIPT_DIR
 chmod +x mill
 rm -fR ~/.mill
-$SCRIPT_DIR/mill -i sireum.jar
+head -n 22 mill > header
+sed -i.bak 's/%1/-i/' header
+sed -i.bak 's/\$1/-i/' header
+rm header.bak
+tail -n +22 mill > mill.jar
+cat header mill.jar > mill
+rm header mill.jar
+$SCRIPT_DIR/mill sireum.jar
 rm -fR out
 echo "... done!"

@@ -24,9 +24,10 @@ echo "Main-Class: mill.Main" > $SCRIPT_DIR/Manifest.txt
 jar cfm $SCRIPT_DIR/mill.jar $SCRIPT_DIR/Manifest.txt *
 cd $SCRIPT_DIR
 rm -fR temp Manifest.txt mill-standalone
-echo -en '#!/usr/bin/env sh\nexec java -DMILL_VERSION=' > header
-echo -en $MILL_VERSION >> header
-echo -e ' $JAVA_OPTS -cp "$0" mill.Main "$@"\n' >> header
+head -n 22 mill-release > header
+sed -i.bak 's/%1/-i/' header
+sed -i.bak 's/\$1/-i/' header
+rm header.bak
 cat header mill.jar > mill-standalone
 rm -fR header mill.jar out
 chmod +x mill-standalone
