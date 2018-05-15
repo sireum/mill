@@ -1,5 +1,7 @@
 /out
 /mill
+/mill.bat
+/mill.vmoptions
 /mill-standalone
 /mill-release
 /git
