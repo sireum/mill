@@ -2,7 +2,7 @@
 export SCRIPT_DIR=$( cd "$( dirname "$0" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 rm -fR mill git out
-if [[ ! -x $SCRIPT_DIR/mill-standalone ]]; then
+if [[ ! -f $SCRIPT_DIR/mill-standalone ]]; then
   echo "Building mill-standalone first ..."
   bash $SCRIPT_DIR/build-standalone.sh
   code=$?
@@ -17,17 +17,22 @@ mkdir -p git/scalajslib/src/org/sireum/mill
 cp sireum/src/org/sireum/mill/SireumModule.scala git/scalajslib/src/org/sireum/mill/
 cd git
 $SCRIPT_DIR/mill-standalone dev.assembly
-cp out/dev/assembly/dest/mill $SCRIPT_DIR/mill
+cp out/dev/assembly/dest/* $SCRIPT_DIR/
 cd $SCRIPT_DIR
-chmod +x mill
 rm -fR ~/.mill
-head -n 22 mill > header
+if [[ -f mill ]]; then
+  MILL=mill
+else
+  MILL=mill.bat
+fi
+head -n 22 $MILL > header
 sed -i.bak 's/%1/-i/' header
 sed -i.bak 's/\$1/-i/' header
 rm header.bak
-tail -n +22 mill > mill.jar
-cat header mill.jar > mill
+tail -n +22 $MILL > mill.jar
+cat header mill.jar > $MILL
 rm header mill.jar
-$SCRIPT_DIR/mill sireum.jar
+chmod +x $MILL
+./$MILL sireum.jar
 rm -fR out
 echo "... done!"
