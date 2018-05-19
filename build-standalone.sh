@@ -20,7 +20,7 @@ cd temp
 unzip -q $SCRIPT_DIR/mill-release > /dev/null
 unzip -qo $SCRIPT_DIR/out/sireum/jar/dest/out.jar > /dev/null
 rm -fR META-INF
-echo "Main-Class: mill.Main" > $SCRIPT_DIR/Manifest.txt
+echo "Main-Class: mill.MillMain" > $SCRIPT_DIR/Manifest.txt
 jar cfm $SCRIPT_DIR/mill.jar $SCRIPT_DIR/Manifest.txt *
 cd $SCRIPT_DIR
 rm -fR temp Manifest.txt mill-standalone
