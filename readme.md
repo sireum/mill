@@ -25,7 +25,7 @@ Based on mill master branch.
 To build:
 
 ```bash
-./build.sh [<mill-release-version>]
+./build.sh
 ```
 
 It calls `build-standalone.sh` first if `mill-standalone` is not available.
