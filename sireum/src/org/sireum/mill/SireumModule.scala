@@ -133,7 +133,9 @@ object SireumModule {
       def testFrameworks: Seq[String]
 
       final override def sources =
-        T.sources(millSourcePath / "src" / "main" / "scala")
+        T.sources(
+          millSourcePath / "src" / "main" / "scala",
+          millSourcePath / "src" / "main" / "java")
 
       def tests: Tests
 
@@ -150,7 +152,10 @@ object SireumModule {
 
         final override def testFrameworks = T { outer.testFrameworks.distinct }
 
-        final override def sources = T.sources(millSourcePath / "scala")
+        final override def sources = T.sources(
+          millSourcePath / "scala",
+          millSourcePath / "java"
+        )
       }
 
     }
