@@ -49,6 +49,10 @@ trait SireumModule extends mill.Module {
     )
 
   def platformSegment: String
+
+  def additionalSourceDirs = T.sources()
+
+  def additionalTestSourceDirs = T.sources()
 }
 
 object SireumModule {
@@ -132,10 +136,14 @@ object SireumModule {
 
       def testFrameworks: Seq[String]
 
-      final override def sources =
-        T.sources(
-          millSourcePath / "src" / "main" / "scala",
-          millSourcePath / "src" / "main" / "java")
+      private def defaultSourceDirs = T.sources(
+        millSourcePath / "src" / "main" / "scala",
+        millSourcePath / "src" / "main" / "java"
+      )
+
+      final override def sources = T.sources(
+        defaultSourceDirs() ++ additionalSourceDirs()
+      )
 
       def tests: Tests
 
@@ -152,9 +160,13 @@ object SireumModule {
 
         final override def testFrameworks = T { outer.testFrameworks.distinct }
 
-        final override def sources = T.sources(
+        private def defaultSourceDirs = T.sources(
           millSourcePath / "scala",
           millSourcePath / "java"
+        )
+
+        final override def sources = T.sources(
+          defaultSourceDirs() ++ additionalTestSourceDirs()
         )
       }
 
@@ -176,9 +188,13 @@ object SireumModule {
 
       def testFrameworks: Seq[String]
 
-      final override def sources = T.sources(
+      private def defaultSourceDirs = T.sources(
         millSourcePath / "src" / "main" / "scala",
         millSourcePath / up / "shared" / "src" / "main" / "scala"
+      )
+
+      final override def sources = T.sources(
+        defaultSourceDirs() ++ additionalSourceDirs()
       )
 
       final override def nodeJSConfig = T {
@@ -200,10 +216,14 @@ object SireumModule {
 
         final override def testFrameworks = T { outer.testFrameworks.distinct }
 
-        final override def sources =
-          T.sources(
-            millSourcePath / "scala",
-            millSourcePath / up / up / up / "shared" / "src" / "test" / "scala")
+        private def defaultSourceDirs = T.sources(
+          millSourcePath / "scala",
+          millSourcePath / up / up / up / "shared" / "src" / "test" / "scala"
+        )
+
+        final override def sources = T.sources(
+          defaultSourceDirs() ++ additionalTestSourceDirs()
+        )
 
         final override def nodeJSConfig = T { outer.nodeJSConfig() }
       }
