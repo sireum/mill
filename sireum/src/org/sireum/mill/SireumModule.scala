@@ -198,7 +198,12 @@ object SireumModule {
       )
 
       final override def nodeJSConfig = T {
-        NodeJSConfig(args = List("--max-old-space-size=4096"))
+        val size = System.getenv("NODEJS_MAX_HEAP")
+        val config = super.nodeJSConfig()
+        if (size != null)
+          config.copy(args = config.args ++ List(s"--max-old-space-size=$size"))
+        else
+          config
       }
 
       def tests: Tests

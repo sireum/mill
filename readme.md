@@ -31,3 +31,9 @@ To build:
 It calls `build-standalone.sh` first if `mill-standalone` is not available.
 
 This produces `mill` (and `mill-standalone`).
+
+
+## Notes
+
+* The `NODEJS_MAX_HEAP` environment variable can be set to specify a custom max heap size for Node.js (in MB).
+  For example, `NODEJS_MAX_HEAP=4096` sets the max heap size to 4096MB.
