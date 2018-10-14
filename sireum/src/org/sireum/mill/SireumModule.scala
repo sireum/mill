@@ -57,6 +57,11 @@ trait SireumModule extends mill.Module {
 
 object SireumModule {
 
+  val publishVersion: String = {
+    val v = System.getenv("VERSION")
+    if (v != null) v else "SNAPSHOT"
+  }
+
   object Developers {
 
     val robby = Developer("robby-phd", "Robby", "https://github.com/robby-phd")
@@ -245,7 +250,7 @@ object SireumModule {
       def subUrl: String
       def developers: Seq[Developer]
 
-      override def publishVersion: T[String] = T { "SNAPSHOT" }
+      override def publishVersion: T[String] = T { publishVersion }
 
       final def m2 = T {
         val pa = publishArtifacts()
@@ -496,7 +501,7 @@ object SireumModule {
 
     def developers: Seq[Developer]
 
-    def publishVersion: String = "SNAPSHOT"
+    def publishVersion: String = publishVersion
 
     def description: String
 
