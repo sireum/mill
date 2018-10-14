@@ -253,7 +253,7 @@ object SireumModule {
       def subUrl: String
       def developers: Seq[Developer]
 
-      override def publishVersion: T[String] = T { publishVersion }
+      override def publishVersion: T[String] = T { SireumModule.publishVersion }
 
       final def m2 = T {
         val pa = publishArtifacts()
@@ -504,7 +504,7 @@ object SireumModule {
 
     def developers: Seq[Developer]
 
-    def publishVersion: String = publishVersion
+    def publishVersion: String = SireumModule.publishVersion
 
     def description: String
 
