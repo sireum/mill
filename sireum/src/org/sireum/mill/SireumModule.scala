@@ -59,10 +59,7 @@ trait SireumModule extends mill.scalalib.JavaModule {
 
 object SireumModule {
 
-  val publishVersion: String = {
-    val v = System.getenv("VERSION")
-    if (v != null) v else "SNAPSHOT"
-  }
+  val publishVersion: String = "SNAPSHOT"
 
   val repositories: Seq[coursier.Repository] = Seq(coursier.maven.MavenRepository("https://jitpack.io"))
 
@@ -70,9 +67,9 @@ object SireumModule {
 
     val robby = Developer("robby-phd", "Robby", "https://github.com/robby-phd")
 
-    val jason = Developer("jasonbelt", "Robby", "https://github.com/jasonbelt")
+    val jason = Developer("jasonbelt", "Jason Belt", "https://github.com/jasonbelt")
 
-    val hari = Developer("thari", "Robby", "https://github.com/thari")
+    val hari = Developer("thari", "Hariharan Thiagarajan", "https://github.com/thari")
 
   }
 
@@ -86,6 +83,50 @@ object SireumModule {
     ps.load(fr)
     fr.close()
     (ps, f)
+  }
+
+  def ghLatestCommit(owner: String, repo: String, branch: String): String = {
+    val out = %%('git, "ls-remote", s"https://github.com/$owner/$repo.git")(pwd).out
+    for (line <- out.lines if line.contains(s"refs/heads/$branch"))
+      return line.substring(0, line.indexWhere(_.isWhitespace))
+    throw new RuntimeException(s"Could not determine latest commit for https://github.com/$owner/$repo.git branch $branch!")
+  }
+
+  def jpLatest(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
+    ivy"com.github.$owner.$repo::$lib:${SireumModule.ghLatestCommit(owner, repo, branch)}"
+  }
+
+  def jpLatestCross(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
+    ivy"com.github.$owner.$repo::$lib::${SireumModule.ghLatestCommit(owner, repo, branch)}"
+  }
+
+  final def jitPack(owner: String, repo: String, lib: String, branch: String): Unit = {
+    val dir = Path(java.nio.file.Files.createTempDirectory(null).toFile.getAbsoluteFile)
+    write(dir / "build.sc",
+      s"""import mill._
+         |import scalalib._
+         |import org.sireum.mill.SireumModule._
+         |
+         |object jptest extends JvmOnly {
+         |
+         |  final override def crossDeps = Seq()
+         |
+         |  final override def deps = Seq()
+         |
+         |  final override def testFrameworks = Seq()
+         |
+         |  final override def testIvyDeps = Agg.empty
+         |
+         |  final override def scalacPluginIvyDeps = testScalacPluginIvyDeps
+         |
+         |  final override def testScalacPluginIvyDeps = Agg.empty
+         |
+         |  def ivyDeps = Agg(
+         |    jpLatestCross("$owner", "$repo", "$lib", "$branch")
+         |  )
+         |}""".stripMargin)
+    cp(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
+    %(pwd / "mill-standalone", "jptest.compile")(dir)
   }
 
   private def property(key: String): String = {
@@ -266,6 +307,14 @@ object SireumModule {
         for ((f, n) <- pa.payload) cp(f.path, ad / n)
       }
 
+      final def jpLatest(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
+        ivy"com.github.$owner.$repo::$lib:${SireumModule.ghLatestCommit(owner, repo, branch)}"
+      }
+
+      final def jpLatestCross(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
+        ivy"com.github.$owner.$repo::$lib::${SireumModule.ghLatestCommit(owner, repo, branch)}"
+      }
+
       override def pomSettings = PomSettings(
         description = description,
         organization = "org.sireum",
@@ -338,6 +387,14 @@ object SireumModule {
       def jvmDeps: Seq[JvmPublish]
 
       def jsDeps: Seq[JsPublish]
+
+      final def jpLatest(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
+        ivy"com.github.$owner.$repo::$lib:${SireumModule.ghLatestCommit(owner, repo, branch)}"
+      }
+
+      final def jpLatestCross(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
+        ivy"com.github.$owner.$repo::$lib::${SireumModule.ghLatestCommit(owner, repo, branch)}"
+      }
     }
 
   }
@@ -680,6 +737,32 @@ object SireumModule {
       }
     }
 
+  }
+
+  trait CrossJvmJsJitPack extends CrossJvmJsPublish {
+
+    def artifactName: String
+
+    final override def artifactNameOpt: Option[String] = Some(artifactName)
+
+    final override def sharedArtifactNameOpt: Option[String] = Some(s"$artifactName-shared")
+
+    final override def jvmArtifactNameOpt: Option[String] = None
+
+    final override def jsArtifactNameOpt: Option[String] = None
+  }
+
+  trait CrossSharedJsJitPack extends CrossJvmJsPublish {
+
+    def artifactName: String
+
+    final override def artifactNameOpt: Option[String] = Some(artifactName)
+
+    final override def sharedArtifactNameOpt: Option[String] = None
+
+    final override def jvmArtifactNameOpt: Option[String] = Some(null) // should not build jvm
+
+    final override def jsArtifactNameOpt: Option[String] = None
   }
 
   implicit class AggDistinct[T](val agg: Agg[T]) extends AnyVal {
