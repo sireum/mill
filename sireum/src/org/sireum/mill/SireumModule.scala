@@ -30,7 +30,7 @@ import mill.scalajslib._
 import mill.scalalib.publish._
 import ammonite.ops._
 
-trait SireumModule extends mill.Module {
+trait SireumModule extends mill.scalalib.JavaModule {
 
   final def scalaVer = SireumModule.scalaVersion
 
@@ -53,6 +53,10 @@ trait SireumModule extends mill.Module {
   def additionalSourceDirs = T.sources()
 
   def additionalTestSourceDirs = T.sources()
+
+  override def repositories = super.repositories ++ Seq(
+    coursier.maven.MavenRepository("https://jitpack.io")
+  )
 }
 
 object SireumModule {
@@ -178,7 +182,6 @@ object SireumModule {
           defaultSourceDirs() ++ additionalTestSourceDirs()
         )
       }
-
     }
 
     trait Js extends ScalaJSModule with SireumModule { outer =>
