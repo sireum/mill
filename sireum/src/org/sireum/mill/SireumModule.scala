@@ -54,9 +54,7 @@ trait SireumModule extends mill.scalalib.JavaModule {
 
   def additionalTestSourceDirs = T.sources()
 
-  override def repositories = super.repositories ++ Seq(
-    coursier.maven.MavenRepository("https://jitpack.io")
-  )
+  override def repositories = super.repositories ++ SireumModule.repositories
 }
 
 object SireumModule {
@@ -65,6 +63,8 @@ object SireumModule {
     val v = System.getenv("VERSION")
     if (v != null) v else "SNAPSHOT"
   }
+
+  val repositories: Seq[coursier.Repository] = Seq(coursier.maven.MavenRepository("https://jitpack.io"))
 
   object Developers {
 
@@ -181,6 +181,8 @@ object SireumModule {
         final override def sources = T.sources(
           defaultSourceDirs() ++ additionalTestSourceDirs()
         )
+
+        override def repositories = super.repositories ++ SireumModule.repositories
       }
     }
 
@@ -243,6 +245,8 @@ object SireumModule {
         )
 
         final override def nodeJSConfig = T { outer.nodeJSConfig() }
+
+        override def repositories = super.repositories ++ SireumModule.repositories
       }
 
     }
