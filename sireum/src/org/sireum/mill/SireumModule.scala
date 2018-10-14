@@ -61,6 +61,10 @@ object SireumModule {
 
     val robby = Developer("robby-phd", "Robby", "https://github.com/robby-phd")
 
+    val jason = Developer("jasonbelt", "Robby", "https://github.com/jasonbelt")
+
+    val hari = Developer("thari", "Robby", "https://github.com/thari")
+
   }
 
   lazy val (properties, propertiesFile) = {
@@ -241,7 +245,16 @@ object SireumModule {
       def subUrl: String
       def developers: Seq[Developer]
 
-      final def pomSettings = PomSettings(
+      override def publishVersion: T[String] = T { "SNAPSHOT" }
+
+      final def m2 = T {
+        val pa = publishArtifacts()
+        val ad = pa.meta.group.split("\\.").foldLeft(T.ctx().dest)((a, b) => a / b) / pa.meta.id / pa.meta.version
+        mkdir(ad)
+        for ((f, n) <- pa.payload) cp(f.path, ad / n)
+      }
+
+      override def pomSettings = PomSettings(
         description = description,
         organization = "org.sireum",
         url = s"https://github.com/sireum/$subUrl",
@@ -483,11 +496,19 @@ object SireumModule {
 
     def developers: Seq[Developer]
 
-    def publishVersion: String
+    def publishVersion: String = "SNAPSHOT"
 
     def description: String
 
     def subUrl: String
+
+    def artifactNameOpt: Option[String] = None
+
+    def sharedArtifactNameOpt: Option[String] = None
+
+    def jvmArtifactNameOpt: Option[String] = None
+
+    def jsArtifactNameOpt: Option[String] = None
 
     object shared extends SharedPublish {
 
@@ -512,6 +533,22 @@ object SireumModule {
       final override def deps = Seq()
 
       final override def moduleDeps = mDeps
+
+      final override def artifactName: T[String] = T {
+        sharedArtifactNameOpt match {
+          case Some(name) => artifactNameCheck(name)
+          case _ =>
+            artifactNameOpt match {
+              case Some(name) => artifactNameCheck(name)
+              case _ => super.artifactName()
+            }
+        }
+      }
+
+      final def artifactNameCheck(name: String): String = {
+        assert(name != null, s"Cannot publish ${millModuleSegments.parts.mkString(".")}")
+        name
+      }
 
       final def mDeps = (for (dep <- outer.deps) yield dep.shared).distinct
 
@@ -548,7 +585,23 @@ object SireumModule {
 
       final override def deps = Seq()
 
+      final override def artifactName: T[String] = T {
+        jvmArtifactNameOpt match {
+          case Some(name) => artifactNameCheck(name)
+          case _ =>
+            artifactNameOpt match {
+              case Some(name) => artifactNameCheck(name)
+              case _ => super.artifactName()
+            }
+        }
+      }
+
       override def moduleDeps = mDeps
+
+      final def artifactNameCheck(name: String): String = {
+        assert(name != null, s"Cannot publish ${millModuleSegments.parts.mkString(".")}")
+        name
+      }
 
       final def mDeps =
         (Seq(shared) ++ (for (dep <- outer.deps)
@@ -588,6 +641,22 @@ object SireumModule {
       final override def deps = Seq()
 
       final override def moduleDeps = mDeps
+
+      final override def artifactName: T[String] = T {
+        jsArtifactNameOpt match {
+          case Some(name) => artifactNameCheck(name)
+          case _ =>
+            artifactNameOpt match {
+              case Some(name) => artifactNameCheck(name)
+              case _ => super.artifactName()
+            }
+        }
+      }
+
+      final def artifactNameCheck(name: String): String = {
+        assert(name != null, s"Cannot publish ${millModuleSegments.parts.mkString(".")}")
+        name
+      }
 
       final def mDeps = ((for (dep <- outer.deps) yield dep.js) ++ jsDeps).distinct
 
