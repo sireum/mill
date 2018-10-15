@@ -92,13 +92,14 @@ object SireumModule {
     throw new RuntimeException(s"Could not determine latest commit for https://github.com/$owner/$repo.git branch $branch!")
   }
 
-  def jpLatest(isCross: Boolean, owner: String, repo: String, lib: String,
+  def jpLatest(isCross: Boolean, owner: String, repo: String, lib: String = "",
                branchOrHash: Either[String, String] = Left("master")): Dep = {
     val hash = branchOrHash match {
       case Left(branch) => SireumModule.ghLatestCommit(owner, repo, branch)
       case Right(h) => h
     }
-    if (isCross) ivy"com.github.$owner.$repo::$lib::$hash" else ivy"com.github.$owner.$repo::$lib:$hash"
+    val l = if ("" == lib) repo else lib
+    if (isCross) ivy"com.github.$owner.$repo::$l::$hash" else ivy"com.github.$owner.$repo::$l:$hash"
   }
 
   final def jitPack(owner: String, repo: String, lib: String): Unit = {
@@ -130,7 +131,7 @@ object SireumModule {
          |  )
          |}""".stripMargin)
     cp(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
-    %(pwd / "mill-standalone", "jptest.compile")(dir)
+    %(System.getProperty("MILL_PATH"), "jptest.compile")(dir)
   }
 
   private def property(key: String): String = {
