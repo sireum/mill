@@ -92,16 +92,20 @@ object SireumModule {
     throw new RuntimeException(s"Could not determine latest commit for https://github.com/$owner/$repo.git branch $branch!")
   }
 
-  def jpLatest(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
-    ivy"com.github.$owner.$repo::$lib:${SireumModule.ghLatestCommit(owner, repo, branch)}"
+  def jpLatest(isCross: Boolean, owner: String, repo: String, lib: String,
+               branchOrHash: Either[String, String] = Left("master")): Dep = {
+    val hash = branchOrHash match {
+      case Left(branch) => SireumModule.ghLatestCommit(owner, repo, branch)
+      case Right(h) => h
+    }
+    if (isCross) ivy"com.github.$owner.$repo::$lib::$hash" else ivy"com.github.$owner.$repo::$lib:$hash"
   }
 
-  def jpLatestCross(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
-    ivy"com.github.$owner.$repo::$lib::${SireumModule.ghLatestCommit(owner, repo, branch)}"
-  }
-
-  final def jitPack(owner: String, repo: String, lib: String, branch: String): Unit = {
-    val dir = Path(java.nio.file.Files.createTempDirectory(null).toFile.getAbsoluteFile)
+  final def jitPack(owner: String, repo: String, lib: String): Unit = {
+    val dirFile = java.nio.file.Files.createTempDirectory(null).toFile.getAbsoluteFile
+    dirFile.deleteOnExit()
+    val dir = Path(dirFile)
+    val hash = %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim
     write(dir / "build.sc",
       s"""import mill._
          |import scalalib._
@@ -122,7 +126,7 @@ object SireumModule {
          |  final override def testScalacPluginIvyDeps = Agg.empty
          |
          |  def ivyDeps = Agg(
-         |    jpLatestCross("$owner", "$repo", "$lib", "$branch")
+         |    jpLatest(true, "$owner", "$repo", "$lib", Right("$hash"))
          |  )
          |}""".stripMargin)
     cp(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
