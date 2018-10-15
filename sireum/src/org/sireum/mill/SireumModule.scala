@@ -100,7 +100,7 @@ object SireumModule {
     }
     val l = if ("" == lib) repo else lib
     owner match {
-      case "sireum" => if (isCross) ivy"org.sireum::$l::$hash" else ivy"org.sireum::$l:$hash"
+      case "sireum" => if (isCross) ivy"org.sireum.$repo::$l::$hash" else ivy"org.sireum.$repo::$l:$hash"
       case _ => if (isCross) ivy"com.github.$owner.$repo::$l::$hash" else ivy"com.github.$owner.$repo::$l:$hash"
     }
   }
