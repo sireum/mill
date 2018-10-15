@@ -303,6 +303,7 @@ object SireumModule {
       override def publishVersion: T[String] = T { SireumModule.publishVersion }
 
       final def m2 = T {
+        assert(!isSourceDep, "m2 is not allowed in source dependency mode.")
         val pa = publishArtifacts()
         val group: Seq[String] = pa.meta.group.split("\\.") match {
           case Array("org", "sireum", _, rest @ _*) => Seq("org", "sireum") ++ rest
