@@ -1,4 +1,4 @@
-function abspath() {
+abspath() {
     if [ -d "$1" ]; then
         # dir
         (cd "$1"; pwd)
