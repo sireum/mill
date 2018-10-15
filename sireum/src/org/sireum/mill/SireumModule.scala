@@ -59,6 +59,8 @@ trait SireumModule extends mill.scalalib.JavaModule {
 
 object SireumModule {
 
+  val isSourceDep: Boolean = "true" == System.getenv("SIREUM_SOURCE_BUILD")
+
   val publishVersion: String = "SNAPSHOT"
 
   val repositories: Seq[coursier.Repository] = Seq(coursier.maven.MavenRepository("https://jitpack.io"))
@@ -111,26 +113,14 @@ object SireumModule {
     val dir = Path(dirFile)
     val hash = %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim
     write(dir / "build.sc",
-      s"""import mill._
-         |import scalalib._
-         |import org.sireum.mill.SireumModule._
-         |
-         |object jptest extends JvmOnly {
-         |
-         |  final override def crossDeps = Seq()
-         |
-         |  final override def deps = Seq()
-         |
-         |  final override def testFrameworks = Seq()
-         |
-         |  final override def testIvyDeps = Agg.empty
-         |
-         |  final override def scalacPluginIvyDeps = testScalacPluginIvyDeps
-         |
-         |  final override def testScalacPluginIvyDeps = Agg.empty
-         |
+      s"""import mill._, scalalib._, org.sireum.mill.SireumModule._
+         |object jptest extends ScalaModule {
+         |  def scalaVersion = "${SireumModule.scalaVersion}"
          |  def ivyDeps = Agg(
-         |    jpLatest(isCross = true, "$owner", "$repo", "$lib", Right("$hash"))
+         |    jpLatest(isCross = false, "$owner", "$repo", "$lib", Right("$hash"))
+         |  )
+         |  def repositories = super.repositories ++ Seq(
+         |    coursier.maven.MavenRepository("https://jitpack.io/")
          |  )
          |}""".stripMargin)
     cp(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
