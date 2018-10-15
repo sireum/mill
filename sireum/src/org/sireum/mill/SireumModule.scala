@@ -126,7 +126,7 @@ object SireumModule {
          |  final override def testScalacPluginIvyDeps = Agg.empty
          |
          |  def ivyDeps = Agg(
-         |    jpLatest(true, "$owner", "$repo", "$lib", Right("$hash"))
+         |    jpLatest(isCross = true, "$owner", "$repo", "$lib", Right("$hash"))
          |  )
          |}""".stripMargin)
     cp(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
@@ -311,14 +311,6 @@ object SireumModule {
         for ((f, n) <- pa.payload) cp(f.path, ad / n)
       }
 
-      final def jpLatest(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
-        ivy"com.github.$owner.$repo::$lib:${SireumModule.ghLatestCommit(owner, repo, branch)}"
-      }
-
-      final def jpLatestCross(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
-        ivy"com.github.$owner.$repo::$lib::${SireumModule.ghLatestCommit(owner, repo, branch)}"
-      }
-
       override def pomSettings = PomSettings(
         description = description,
         organization = "org.sireum",
@@ -391,14 +383,6 @@ object SireumModule {
       def jvmDeps: Seq[JvmPublish]
 
       def jsDeps: Seq[JsPublish]
-
-      final def jpLatest(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
-        ivy"com.github.$owner.$repo::$lib:${SireumModule.ghLatestCommit(owner, repo, branch)}"
-      }
-
-      final def jpLatestCross(owner: String, repo: String, lib: String, branch: String = "master"): Dep = {
-        ivy"com.github.$owner.$repo::$lib::${SireumModule.ghLatestCommit(owner, repo, branch)}"
-      }
     }
 
   }
