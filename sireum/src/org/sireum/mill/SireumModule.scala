@@ -189,6 +189,8 @@ object SireumModule {
 
       def deps: Seq[Jvm]
 
+      def testDeps: Seq[JavaModule] = Seq()
+
       def testIvyDeps: Agg[Dep]
 
       def testScalacPluginIvyDeps: Agg[Dep]
@@ -241,6 +243,8 @@ object SireumModule {
       final override def scalacOptions = T { scalacOpts }
 
       def deps: Seq[Js]
+
+      def testDeps: Seq[ScalaJSModule] = Seq()
 
       def testIvyDeps: Agg[Dep]
 
@@ -354,6 +358,12 @@ object SireumModule {
 
       def jsDeps: Seq[Js]
 
+      def testDeps: Seq[JavaModule] = Seq()
+
+      def jvmTestDeps: Seq[JavaModule] = Seq()
+
+      def jsTestDeps: Seq[ScalaJSModule] = Seq()
+
       def ivyDeps: Agg[Dep]
 
       def scalacPluginIvyDeps: Agg[Dep]
@@ -441,7 +451,8 @@ object SireumModule {
     object tests extends Tests {
 
       final override def moduleDeps =
-        (Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
+        (Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+          testDeps ++ outer.testDeps).distinct
 
     }
   }
@@ -459,7 +470,8 @@ object SireumModule {
     object tests extends Tests {
 
       final override def moduleDeps =
-        (Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
+        (Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+          testDeps ++ outer.testDeps).distinct
 
     }
   }
@@ -487,7 +499,8 @@ object SireumModule {
       object tests extends Tests {
 
         final override def moduleDeps =
-          (Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
+          (Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+            testDeps ++ outer.testDeps).distinct
 
       }
     }
@@ -515,7 +528,8 @@ object SireumModule {
       object tests extends Tests {
 
         final override def moduleDeps =
-          (Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
+          (Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+            testDeps ++ jvmTestDeps).distinct
 
       }
     }
@@ -543,7 +557,8 @@ object SireumModule {
       object tests extends Tests {
 
         final override def moduleDeps =
-          (Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
+          (Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+            testDeps ++ jsTestDeps).distinct
 
       }
     }
@@ -613,7 +628,8 @@ object SireumModule {
       object tests extends Tests {
 
         final override def moduleDeps =
-          (Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
+          (Seq(shared) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+            testDeps ++ outer.testDeps).distinct
 
       }
 
@@ -668,7 +684,8 @@ object SireumModule {
       object tests extends Tests {
 
         final override def moduleDeps =
-          (Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
+          (Seq(jvm) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+            testDeps ++ outer.jvmTestDeps).distinct
 
       }
 
@@ -721,7 +738,8 @@ object SireumModule {
       object tests extends Tests {
 
         final override def moduleDeps =
-          (Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests)).flatten).distinct
+          (Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+            testDeps ++ jsTestDeps).distinct
 
       }
     }
@@ -749,7 +767,7 @@ object SireumModule {
 
     final override def sharedArtifactNameOpt: Option[String] = None
 
-    final override def jvmArtifactNameOpt: Option[String] = Some(null) // should not build jvm
+    final override def jvmArtifactNameOpt: Option[String] = Some(null) // should not publish jvm
 
     final override def jsArtifactNameOpt: Option[String] = None
   }
