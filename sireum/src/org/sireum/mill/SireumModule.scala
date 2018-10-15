@@ -99,7 +99,10 @@ object SireumModule {
       case Right(h) => h
     }
     val l = if ("" == lib) repo else lib
-    if (isCross) ivy"com.github.$owner.$repo::$l::$hash" else ivy"com.github.$owner.$repo::$l:$hash"
+    owner match {
+      case "sireum" => if (isCross) ivy"org.sireum::$l::$hash" else ivy"org.sireum::$l:$hash"
+      case _ => if (isCross) ivy"com.github.$owner.$repo::$l::$hash" else ivy"com.github.$owner.$repo::$l:$hash"
+    }
   }
 
   final def jitPack(owner: String, repo: String, lib: String): Unit = {
@@ -311,7 +314,11 @@ object SireumModule {
 
       final def m2 = T {
         val pa = publishArtifacts()
-        val ad = pa.meta.group.split("\\.").foldLeft(T.ctx().dest)((a, b) => a / b) / pa.meta.id / pa.meta.version
+        val group: Seq[String] = pa.meta.group.split("\\.") match {
+          case Array("org", "sireum", _, rest @ _*) => Seq("org", "sireum") ++ rest
+          case g => g.toSeq
+        }
+        val ad = group.foldLeft(T.ctx().dest)((a, b) => a / b) / pa.meta.id / pa.meta.version
         mkdir(ad)
         for ((f, n) <- pa.payload) cp(f.path, ad / n)
       }
