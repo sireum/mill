@@ -438,7 +438,7 @@ object SireumModule {
 
     final override def millSourcePath = super.millSourcePath / platformSegment
 
-    def crossDeps: Seq[CrossJvmJs]
+    def crossDeps: Seq[Project.CrossJvmJs]
 
     override def moduleDeps = mDeps
 
@@ -459,7 +459,7 @@ object SireumModule {
 
     final override def millSourcePath = super.millSourcePath / platformSegment
 
-    def crossDeps: Seq[CrossJvmJs]
+    def crossDeps: Seq[Project.CrossJvmJs]
 
     final override def moduleDeps = mDeps
 
