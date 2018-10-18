@@ -1,31 +1,37 @@
 #!/bin/bash -e
 export SCRIPT_DIR=$( cd "$( dirname "$0" )" &> /dev/null && pwd )
-cd $SCRIPT_DIR
-rm -fR mill git out
-if [[ ! -f $SCRIPT_DIR/mill-standalone ]]; then
+cd ${SCRIPT_DIR}
+./prelude.sh
+if [ -f mill ]; then
+  exit 0
+fi
+if [ ! -f mill-standalone ]; then
   echo "Building mill-standalone first ..."
-  bash $SCRIPT_DIR/build-standalone.sh
+  bash ./build-standalone.sh
   code=$?
-  if [[ $code -ne 0 ]]; then
-    exit $code
+  if [[ ${code} -ne 0 ]]; then
+    exit ${code}
   fi
 fi
+rm -fR git out
 echo "Cloning mill master branch ..."
 git clone https://github.com/lihaoyi/mill.git git
+IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
 echo "Building mill with SireumModule ..."
 mkdir -p git/scalajslib/src/org/sireum/mill
-cp sireum/src/org/sireum/mill/SireumModule.scala git/scalajslib/src/org/sireum/mill/
 cd git
-$SCRIPT_DIR/mill-standalone dev.assembly
-cp out/dev/assembly/dest/* $SCRIPT_DIR/
-cd $SCRIPT_DIR
+git reset --hard ${ver[1]}
+cp ${SCRIPT_DIR}/sireum/src/org/sireum/mill/SireumModule.scala scalajslib/src/org/sireum/mill/
+${SCRIPT_DIR}/mill-standalone dev.assembly
+cp out/dev/assembly/dest/* ${SCRIPT_DIR}/
+cd ${SCRIPT_DIR}
 rm -fR ~/.mill
 if [[ -f mill ]]; then
   MILL=mill
 else
   MILL=mill.bat
 fi
-head -n 22 $MILL > header
+head -n 22 ${MILL} > header
 sed -i.bak 's/%1/-i/' header
 sed -i.bak 's/\$1/-i/' header
 sed -i.bak 's/mill.MillMain "/-DMILL_PATH="\$0" mill.MillMain "/' header
@@ -33,10 +39,11 @@ sed -i.bak 's/mill.MillMain %/-DMILL_PATH="%~dpnx0" mill.MillMain %/' header
 sed -i.bak 's/mill.main.client.MillClientMain "/-DMILL_PATH="\$0" mill.main.client.MillClientMain "/' header
 sed -i.bak 's/mill.main.client.MillClientMain %/-DMILL_PATH="%~dpnx0" mill.main.client.MillClientMain %/' header
 rm header.bak
-tail -n +22 $MILL > mill.jar
-cat header mill.jar > $MILL
+tail -n +22 ${MILL} > mill.jar
+cat header mill.jar > ${MILL}
 rm header mill.jar
-chmod +x $MILL
-./$MILL sireum.jar
-rm -fR out
+chmod +x ${MILL}
+./${MILL} sireum.jar
+rm -fR out git/scalajslib/src/org/sireum/mill/SireumModule.scala
+echo "${ver[0]}-${ver[1]}" > VER
 echo "... done!"
