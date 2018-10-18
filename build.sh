@@ -38,7 +38,12 @@ sed -i.bak 's/mill.MillMain "/-DMILL_PATH="\$0" mill.MillMain "/' header
 sed -i.bak 's/mill.MillMain %/-DMILL_PATH="%~dpnx0" mill.MillMain %/' header
 sed -i.bak 's/mill.main.client.MillClientMain "/-DMILL_PATH="\$0" mill.main.client.MillClientMain "/' header
 sed -i.bak 's/mill.main.client.MillClientMain %/-DMILL_PATH="%~dpnx0" mill.main.client.MillClientMain %/' header
+head -n 2 header > header.pre
 rm header.bak
+tail -n 20 header > header.post
+cat header.pre abspath.sh header.post > header
+sed -i.bak 's/\$0/\$( abspath \$0 )/g' header
+rm header.bak header.pre header.post
 tail -n +22 ${MILL} > mill.jar
 cat header mill.jar > ${MILL}
 rm header mill.jar
