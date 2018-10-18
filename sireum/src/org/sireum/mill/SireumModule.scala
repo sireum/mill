@@ -61,8 +61,6 @@ object SireumModule {
 
   val isSourceDep: Boolean = "true" == System.getenv("SIREUM_SOURCE_BUILD")
 
-  val publishVersion: String = "SNAPSHOT"
-
   val repositories: Seq[coursier.Repository] = Seq(coursier.maven.MavenRepository("https://jitpack.io"))
 
   object Developers {
@@ -86,6 +84,11 @@ object SireumModule {
     fr.close()
     (ps, f)
   }
+
+  def publishVersion: String =
+    try %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim catch {
+      case _: Throwable => "SNAPSHOT"
+    }
 
   def ghLatestCommit(owner: String, repo: String, branch: String): String = {
     val out = %%('git, "ls-remote", s"https://github.com/$owner/$repo.git")(pwd).out
@@ -111,7 +114,7 @@ object SireumModule {
     val dirFile = java.nio.file.Files.createTempDirectory(null).toFile.getAbsoluteFile
     dirFile.deleteOnExit()
     val dir = Path(dirFile)
-    val hash = %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim
+    val hash = publishVersion
     write(dir / "build.sc",
       s"""import mill._, scalalib._, org.sireum.mill.SireumModule._
          |object jptest extends ScalaModule {
