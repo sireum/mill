@@ -17,8 +17,8 @@ echo "Packaging mill-standalone ..."
 rm -fR temp
 mkdir temp
 cd temp
-unzip -q $SCRIPT_DIR/mill-release > /dev/null
-unzip -qo $SCRIPT_DIR/out/sireum/jar/dest/out.jar > /dev/null
+jar xf $SCRIPT_DIR/mill-release > /dev/null
+jar xf $SCRIPT_DIR/out/sireum/jar/dest/out.jar > /dev/null
 rm -fR META-INF
 echo "Main-Class: mill.MillMain" > $SCRIPT_DIR/Manifest.txt
 jar cfm $SCRIPT_DIR/mill.jar $SCRIPT_DIR/Manifest.txt *
@@ -31,11 +31,7 @@ sed -i.bak 's/mill.MillMain "/-DMILL_PATH="\$0" mill.MillMain "/' header
 sed -i.bak 's/mill.MillMain %/-DMILL_PATH="%~dpnx0" mill.MillMain %/' header
 sed -i.bak 's/mill.main.client.MillClientMain "/-DMILL_PATH="\$0" mill.main.client.MillClientMain "/' header
 sed -i.bak 's/mill.main.client.MillClientMain %/-DMILL_PATH="%~dpnx0" mill.main.client.MillClientMain %/' header
-head -n 2 header > header.pre
-tail -n 20 header > header.post
-cat header.pre abspath.sh header.post > header
-sed -i.bak 's/\$0/\$( abspath \$0 )/g' header
-rm header.bak header.pre header.post
+rm header.bak
 cat header mill.jar > mill-standalone
 rm -fR header mill.jar out
 chmod +x mill-standalone
