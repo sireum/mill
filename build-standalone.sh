@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 export SCRIPT_DIR=$( cd "$( dirname "$0" )" &> /dev/null && pwd )
 cd $SCRIPT_DIR
 IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
