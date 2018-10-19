@@ -20,7 +20,7 @@ IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
 echo "Building mill with SireumModule ..."
 mkdir -p git/scalajslib/src/org/sireum/mill
 cd git
-git reset --hard ${ver[1]}
+git reset --hard ${ver[2]}
 cp ${SCRIPT_DIR}/sireum/src/org/sireum/mill/SireumModule.scala scalajslib/src/org/sireum/mill/
 ${SCRIPT_DIR}/mill-standalone dev.assembly
 cp out/dev/assembly/dest/* ${SCRIPT_DIR}/
@@ -50,5 +50,5 @@ rm header mill.jar
 chmod +x ${MILL}
 ./${MILL} sireum.jar
 rm -fR out git/scalajslib/src/org/sireum/mill/SireumModule.scala
-echo "${ver[0]}-${ver[1]}" > VER
+echo "${ver[0]}-${ver[1]}-${ver[2]}" > VER
 echo "... done!"

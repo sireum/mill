@@ -5,7 +5,7 @@ IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
 if [[ "${ver[1]}" == "" ]]; then
   MILL_VERSION=${ver[0]}
 else
-  MILL_VERSION=${ver[0]}-${ver[1]}
+  MILL_VERSION=${ver[0]}-${ver[1]}-${ver[2]}
 fi
 echo "Downloading mill $MILL_VERSION ..."
 rm -fR mill-release
