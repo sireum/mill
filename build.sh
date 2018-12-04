@@ -49,6 +49,6 @@ cat header mill.jar > ${MILL}
 rm header mill.jar
 chmod +x ${MILL}
 ./${MILL} sireum.jar
-rm -fR out git/scalajslib/src/org/sireum/mill/SireumModule.scala
+rm -fR out
 echo "${ver[0]}-${ver[1]}-${ver[2]}" > VER
 echo "... done!"
