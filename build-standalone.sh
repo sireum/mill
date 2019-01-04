@@ -17,11 +17,11 @@ echo "Packaging mill-standalone ..."
 rm -fR temp
 mkdir temp
 cd temp
-jar xf ${SCRIPT_DIR}/mill-release > /dev/null
-jar xf ${SCRIPT_DIR}/out/sireum/jar/dest/out.jar > /dev/null
+unzip -qo ${SCRIPT_DIR}/mill-release > /dev/null || true
+unzip -qo ${SCRIPT_DIR}/out/sireum/jar/dest/out.jar > /dev/null || true
 rm -fR META-INF
 echo "Main-Class: mill.MillMain" > ${SCRIPT_DIR}/Manifest.txt
-jar cfm ${SCRIPT_DIR}/mill.jar ${SCRIPT_DIR}/Manifest.txt *
+zip -r ${SCRIPT_DIR}/mill.jar ${SCRIPT_DIR}/Manifest.txt * > /dev/null
 cd ${SCRIPT_DIR}
 rm -fR temp Manifest.txt mill-standalone
 head -n 22 mill-release > header
