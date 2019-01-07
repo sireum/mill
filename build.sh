@@ -14,13 +14,20 @@ if [ ! -f mill-standalone ]; then
   fi
 fi
 rm -fR git out
-echo "Cloning mill master branch ..."
-git clone https://github.com/lihaoyi/mill.git git
 IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
+if [[ ${ver[2]} == "" ]]; then
+  echo "Cloning mill ${ver[0]} ..."
+  git clone --branch ${ver[0]} https://github.com/lihaoyi/mill.git git
+else
+  echo "Cloning mill ${ver[0]}-${ver[1]}-${ver[2]} ..."
+  git clone https://github.com/lihaoyi/mill.git git
+  cd git
+  git reset --hard ${ver[2]}
+  cd ..
+fi
 echo "Building mill with SireumModule ..."
 mkdir -p git/scalajslib/src/org/sireum/mill
 cd git
-git reset --hard ${ver[2]}
 cp ${SCRIPT_DIR}/sireum/src/org/sireum/mill/SireumModule.scala scalajslib/src/org/sireum/mill/
 ${SCRIPT_DIR}/mill-standalone dev.assembly
 cp out/dev/assembly/dest/* ${SCRIPT_DIR}/
