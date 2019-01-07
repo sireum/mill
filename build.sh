@@ -2,7 +2,7 @@
 export SCRIPT_DIR=$( cd "$( dirname "$0" )" &> /dev/null && pwd )
 cd ${SCRIPT_DIR}
 ./prelude.sh
-if [ -f mill ]; then
+if [ -f mill ] || [ -f mill.bat ]; then
   exit 0
 fi
 if [ ! -f mill-standalone ]; then
