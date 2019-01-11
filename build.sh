@@ -57,5 +57,8 @@ rm header mill.jar
 chmod +x ${MILL}
 ./${MILL} sireum.jar
 rm -fR out
+if [[ -f mill.bat ]]; then
+  ln -s mill.bat mill
+fi
 echo "${ver[0]}-${ver[1]}-${ver[2]}" > VER
 echo "... done!"
