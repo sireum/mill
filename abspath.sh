@@ -11,9 +11,8 @@ abspath0() {
 }
 abspath() {
     P=$( abspath0 "$1" )
-    if [[ $(uname -s) == CYGWIN* ]];then
-      echo "$(cygpath -C OEM -w -a $P)"
-    else 
-      echo $P
-    fi
+    case $(uname -s) in
+      CYGWIN*) echo "$(cygpath -C OEM -w -a $P)";;
+      *) echo $P
+    esac
 }
