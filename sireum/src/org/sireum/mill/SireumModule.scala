@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2018, Robby, Kansas State University
+ Copyright (c) 2019, Robby, Kansas State University
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without
@@ -163,7 +163,7 @@ object SireumModule {
 
   lazy val java8CompatVersion = property("org.sireum.version.java8compat")
 
-  lazy val ammoniteOpsVersion = property("org.sireum.version.ammonite-ops")
+  lazy val osLibVersion = property("org.sireum.version.os-lib")
 
   lazy val utestVersion = property("org.sireum.version.utest")
 
