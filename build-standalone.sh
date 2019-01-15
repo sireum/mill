@@ -26,7 +26,7 @@
 export SCRIPT_DIR=$( cd "$( dirname "$0" )" &> /dev/null && pwd )
 cd ${SCRIPT_DIR}
 ./prelude.sh
-if [[ -f mill-standalone ]]; then
+if [[ -f mill-standalone.bat ]]; then
   exit 0
 fi
 IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
@@ -69,4 +69,5 @@ cat header mill.jar > mill-standalone.bat
 rm -fR header mill.jar out
 chmod +x mill-standalone.bat
 ln -s mill-standalone.bat mill-standalone
+echo "${ver[0]}-${ver[1]}-${ver[2]}" > VER
 echo "... done!"
