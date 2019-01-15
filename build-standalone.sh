@@ -65,7 +65,8 @@ tail -n 20 header > header.post
 cat header.pre abspath.sh header.post > header
 sed -i.bak 's/\$0/\$( abspath \$0 )/g' header
 rm header.bak header.pre header.post
-cat header mill.jar > mill-standalone
+cat header mill.jar > mill-standalone.bat
 rm -fR header mill.jar out
-chmod +x mill-standalone
+chmod +x mill-standalone.bat
+ln -s mill-standalone.bat mill-standalone
 echo "... done!"

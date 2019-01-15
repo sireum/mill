@@ -3,6 +3,7 @@
 /mill.bat
 /mill.vmoptions
 /mill-standalone
+/mill-standalone.bat
 /mill-release
 /git
 .idea
