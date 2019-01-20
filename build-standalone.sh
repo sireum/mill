@@ -29,7 +29,7 @@ cd ${SCRIPT_DIR}
 if [[ -f mill-standalone.bat ]]; then
   exit 0
 fi
-IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
+IFS=$' \r' read -r -a ver <<< $(head -n 1 mill-version.txt)
 if [[ "${ver[1]}" == "" ]]; then
   MILL_VERSION=${ver[0]}
 else

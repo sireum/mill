@@ -38,7 +38,7 @@ if [[ ! -f mill-standalone ]]; then
   fi
 fi
 rm -fR git out
-IFS=' ' read -r -a ver <<< $(head -n 1 mill-version.txt)
+IFS=$' \r' read -r -a ver <<< $(head -n 1 mill-version.txt)
 if [[ ${ver[2]} == "" ]]; then
   echo "Cloning mill ${ver[0]} ..."
   git clone --branch ${ver[0]} https://github.com/lihaoyi/mill.git git
