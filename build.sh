@@ -52,6 +52,7 @@ fi
 echo "Building mill with SireumModule ..."
 mkdir -p git/scalajslib/src/org/sireum/mill
 cd git
+git config core.filemode false
 cp ${SCRIPT_DIR}/sireum/src/org/sireum/mill/SireumModule.scala scalajslib/src/org/sireum/mill/
 ${SCRIPT_DIR}/mill-standalone dev.assembly
 cp out/dev/assembly/dest/* ${SCRIPT_DIR}/
