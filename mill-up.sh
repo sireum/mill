@@ -30,4 +30,4 @@ if [[ -f ${SCRIPT_DIR}/mill.bat ]]; then
 else
   MILL=mill
 fi
-${MILL} mill.scalalib.Dependency/updates
+${SCRIPT_DIR}/${MILL} mill.scalalib.Dependency/updates

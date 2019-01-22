@@ -31,4 +31,4 @@ else
   MILL=mill
 fi
 export SIREUM_SOURCE_BUILD=true
-${MILL} $* mill.scalalib.GenIdea/idea
+${SCRIPT_DIR}/${MILL} $* mill.scalalib.GenIdea/idea
