@@ -86,14 +86,14 @@ object SireumModule {
   }
 
   def publishVersion: String =
-    try %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim.substring(0, 8) catch {
+    try %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim.substring(0, 10) catch {
       case _: Throwable => "SNAPSHOT"
     }
 
   def ghLatestCommit(owner: String, repo: String, branch: String): String = {
     val out = %%('git, "ls-remote", s"https://github.com/$owner/$repo.git")(pwd).out
     for (line <- out.lines if line.contains(s"refs/heads/$branch"))
-      return line.substring(0, 8)
+      return line.substring(0, 10)
     throw new RuntimeException(s"Could not determine latest commit for https://github.com/$owner/$repo.git branch $branch!")
   }
 
