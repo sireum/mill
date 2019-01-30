@@ -110,11 +110,10 @@ object SireumModule {
     }
   }
 
-  final def jitPack(owner: String, repo: String, lib: String): Unit = {
+  final def jitPack(owner: String, repo: String, lib: String, hash: String = publishVersion): Unit = {
     val dirFile = java.nio.file.Files.createTempDirectory(null).toFile.getAbsoluteFile
     dirFile.deleteOnExit()
     val dir = Path(dirFile)
-    val hash = publishVersion
     write(dir / "build.sc",
       s"""import mill._, scalalib._, org.sireum.mill.SireumModule._
          |object jptest extends ScalaModule {
