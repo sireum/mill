@@ -29,6 +29,12 @@ cd ${SCRIPT_DIR}
 if [[ -f mill ]] || [[ -f mill.bat ]]; then
   exit 0
 fi
+IFS=$' \r' read -r -a ver <<< $(head -n 1 mill-version.txt)
+if [[ "$(uname)" == "Darwin" ]]; then
+  TS=$(stat -f "%m" ${SCRIPT_DIR}/sireum/src/org/sireum/mill/SireumModule.scala)
+else
+  TS=$(date +%s -r ${SCRIPT_DIR}/sireum/src/org/sireum/mill/SireumModule.scala)
+fi
 if [[ ! -f mill-standalone ]]; then
   echo "Building mill-standalone first ..."
   bash ./build-standalone.sh
@@ -38,7 +44,6 @@ if [[ ! -f mill-standalone ]]; then
   fi
 fi
 rm -fR git out
-IFS=$' \r' read -r -a ver <<< $(head -n 1 mill-version.txt)
 if [[ ${ver[2]} == "" ]]; then
   echo "Cloning mill ${ver[0]} ..."
   git clone --branch ${ver[0]} https://github.com/lihaoyi/mill.git git
@@ -85,5 +90,5 @@ rm -fR out
 if [[ -f mill.bat ]]; then
   ln -s mill.bat mill
 fi
-echo "${ver[0]}-${ver[1]}-${ver[2]}" > VER
+echo "${ver[0]}-${ver[1]}-${ver[2]}-${TS}" > VER
 echo "... done!"

@@ -30,6 +30,11 @@ if [[ -f mill-standalone.bat ]]; then
   exit 0
 fi
 IFS=$' \r' read -r -a ver <<< $(head -n 1 mill-version.txt)
+if [[ "$(uname)" == "Darwin" ]]; then
+  TS=$(stat -f "%m" ${SCRIPT_DIR}/sireum/src/org/sireum/mill/SireumModule.scala)
+else
+  TS=$(date +%s -r ${SCRIPT_DIR}/sireum/src/org/sireum/mill/SireumModule.scala)
+fi
 if [[ "${ver[1]}" == "" ]]; then
   MILL_VERSION=${ver[0]}
 else
@@ -69,5 +74,5 @@ cat header mill.jar > mill-standalone.bat
 rm -fR header mill.jar out
 chmod +x mill-standalone.bat
 ln -s mill-standalone.bat mill-standalone
-echo "${ver[0]}-${ver[1]}-${ver[2]}" > VER
+echo "${ver[0]}-${ver[1]}-${ver[2]}-${TS}" > VER
 echo "... done!"
