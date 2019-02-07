@@ -30,5 +30,4 @@ if [[ -f ${SCRIPT_DIR}/mill.bat ]]; then
 else
   MILL=mill
 fi
-export SIREUM_SOURCE_BUILD=true
 ${SCRIPT_DIR}/${MILL} $* mill.scalalib.GenIdea/idea
