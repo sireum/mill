@@ -59,7 +59,7 @@ trait SireumModule extends mill.scalalib.JavaModule {
 
 object SireumModule {
 
-  val isSourceDep: Boolean = "true" == System.getenv("SIREUM_SOURCE_BUILD")
+  val isSourceDep: Boolean = "false" != System.getenv("SIREUM_SOURCE_BUILD")
 
   val repositories: Seq[coursier.Repository] = Seq(coursier.maven.MavenRepository("https://jitpack.io"))
 
