@@ -366,6 +366,10 @@ object SireumModule {
 
       def ivyDeps: Agg[Dep]
 
+      def jvmIvyDeps: Agg[Dep] = Agg.empty
+
+      def jsIvyDeps: Agg[Dep] = Agg.empty
+
       def scalacPluginIvyDeps: Agg[Dep]
 
       def testIvyDeps: Agg[Dep]
@@ -507,11 +511,11 @@ object SireumModule {
 
     object jvm extends Jvm {
 
-      final override def ivyDeps = T { outer.ivyDeps.distinct }
+      final override def ivyDeps = T { (outer.ivyDeps ++ outer.jvmIvyDeps).distinct }
 
       final override def scalacPluginIvyDeps = T { outer.scalacPluginIvyDeps.distinct }
 
-      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmTestIvyDeps).distinct
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmIvyDeps ++ outer.jvmTestIvyDeps).distinct
 
       final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
@@ -536,13 +540,13 @@ object SireumModule {
 
     object js extends Js {
 
-      final override def ivyDeps = T { outer.ivyDeps }
+      final override def ivyDeps = T { (outer.ivyDeps ++ outer.jsIvyDeps).distinct }
 
       final override def scalacPluginIvyDeps = T {
         (outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()).distinct
       }
 
-      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jsTestIvyDeps).distinct
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmIvyDeps ++ outer.jsTestIvyDeps).distinct
 
       final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
@@ -641,13 +645,13 @@ object SireumModule {
 
       final override def description: String = outer.description
 
-      final override def ivyDeps = T { outer.ivyDeps.distinct }
+      final override def ivyDeps = T { (outer.ivyDeps ++ outer.jvmIvyDeps).distinct }
 
       final override def scalacPluginIvyDeps = T {
         (outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()).distinct
       }
 
-      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmTestIvyDeps).distinct
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jvmIvyDeps ++ outer.jvmTestIvyDeps).distinct
 
       final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
@@ -697,13 +701,13 @@ object SireumModule {
 
       final override def description: String = outer.description
 
-      final override def ivyDeps = T { outer.ivyDeps.distinct }
+      final override def ivyDeps = T { (outer.ivyDeps ++ outer.jsIvyDeps).distinct }
 
       final override def scalacPluginIvyDeps = T {
         (outer.scalacPluginIvyDeps ++ super.scalacPluginIvyDeps()).distinct
       }
 
-      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jsTestIvyDeps).distinct
+      final override def testIvyDeps = (outer.testIvyDeps ++ outer.jsIvyDeps ++ outer.jsTestIvyDeps).distinct
 
       final override def testScalacPluginIvyDeps = outer.testScalacPluginIvyDeps.distinct
 
