@@ -45,7 +45,8 @@ trait SireumModule extends mill.scalalib.JavaModule {
       "-Ydelambdafy:method",
       "-feature",
       "-unchecked",
-      "-Xfatal-warnings"
+      "-Xfatal-warnings",
+      "-language:postfixOps"
     )
 
   def platformSegment: String
