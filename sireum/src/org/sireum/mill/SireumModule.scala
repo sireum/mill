@@ -127,7 +127,8 @@ object SireumModule {
          |  )
          |}""".stripMargin)
     cp(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
-    %(System.getProperty("MILL_PATH"), "jptest.compile")(dir)
+    %(new java.io.File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI).getCanonicalPath,
+      "jptest.compile")(dir)
   }
 
   private def property(key: String): String = {
