@@ -40,7 +40,7 @@ def checkDeps(): Unit = {
   if (!Os.proc(ISZ("7z")).run().ok) {
     missing = missing :+ "7z"
   }
-  if (!Os.proc(ISZ("git", "--version")).run().ok) {
+  if (isDev && !Os.proc(ISZ("git", "--version")).run().ok) {
     missing = missing :+ "git"
   }
   if (missing.nonEmpty) {
