@@ -5,7 +5,7 @@ with [SireumModule](sireum/src/org/sireum/mill/SireumModule.scala) embedded in i
 ease building Sireum modules and with IntelliJ support for SireumModule.
 
 
-#### Requirements: `7z`, `git`
+#### Requirements: `7z` (and `git` for dev version)
 
 ## Standalone Version
 
@@ -29,7 +29,7 @@ To build:
 This produces `mill-standalone` and `mill-standalone.bat`, and the mill release version is stored as 
 `mill-release-*`.
 
-## Local Version with IntelliJ Support for SireumModule
+## Local Version with IntelliJ Support for SireumModule (dev)
 
 Based on mill master branch.
 
