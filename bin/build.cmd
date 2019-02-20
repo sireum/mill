@@ -1,13 +1,45 @@
-::#! 2> /dev/null                                   #
-@ 2>/dev/null # 2>nul & echo off & goto BOF         #
-SCRIPT_HOME=$(cd "$(dirname "$0")" && pwd)          #
-if [ ! -f ${SCRIPT_HOME}/sireum.jar ]; then         #
-  ${SCRIPT_HOME}/init.sh                            #
-fi                                                  #
-exec ${SCRIPT_HOME}/sireum slang run -s "$0" "$@"   #
+::#! 2> /dev/null                                                          #
+@ 2>/dev/null # 2>nul & echo off & goto BOF                                #
+export SIREUM_HOME=$(cd -P $(dirname "$0")/.. && pwd -P)                   #
+if [ ! -z ${SIREUM_PROVIDED_SCALA++} ]; then                               #
+  SIREUM_PROVIDED_JAVA=true                                                #
+fi                                                                         #
+if [ ! -f "${SIREUM_HOME}/bin/sireum.jar" ]; then                          #
+  "${SIREUM_HOME}/bin/init.sh"                                             #
+fi                                                                         #
+if [ -n "$COMSPEC" -a -x "$COMSPEC" ]; then                                #
+  PLATFORM="win"                                                           #
+  export SIREUM_HOME=$(cygpath -C OEM -w -a ${SIREUM_HOME})                #
+  if [ -z ${SIREUM_PROVIDED_JAVA++} ]; then                                #
+    export JAVA_HOME="${SIREUM_HOME}\\bin\\win\\java"                      #
+    export PATH="${SIREUM_HOME}/bin/win/java":$PATH                        #
+    export PATH="$(cygpath -C OEM -w -a ${JAVA_HOME}/bin)":$PATH           #
+  fi                                                                       #
+elif [ "$(uname)" = "Darwin" ]; then                                       #
+  PLATFORM="mac"                                                           #
+  if [ -z ${SIREUM_PROVIDED_JAVA++} ]; then                                #
+    export JAVA_HOME="${SIREUM_HOME}/bin/mac/java"                         #
+    export PATH="${JAVA_HOME}/bin":$PATH                                   #
+  fi                                                                       #
+elif [ "$(expr substr $(uname -s) 1 5)" = "Linux" ]; then                  #
+  PLATFORM="linux"                                                         #
+  if [ -z ${SIREUM_PROVIDED_JAVA++} ]; then                                #
+    export JAVA_HOME="${SIREUM_HOME}/bin/linux/java"                       #
+    export PATH="${JAVA_HOME}/bin":$PATH                                   #
+  fi                                                                       #
+fi                                                                         #
+if [ -f "$0.com" ] && [ "$0.com" -nt "$0" ]; then                          #
+  exec "$0.com" "$@"                                                       #
+else                                                                       #
+  rm -fR "$0.com"                                                          #
+  exec "${SIREUM_HOME}/bin/sireum" slang run -s -n "$0" "$@"               #
+fi                                                                         #
 :BOF
-if not exist %~dp0sireum.jar call %~dp0init.bat
-%~dp0sireum.bat slang run -s "%0" %*
+set SIREUM_HOME="%~dp0..\"
+if defined SIREUM_PROVIDED_SCALA set SIREUM_PROVIDED_JAVA=true
+if not exist "%~dp0sireum.jar" call "%~dp0init.bat"
+if not defined SIREUM_PROVIDED_JAVA set PATH="%~dp0win\java\bin":%PATH%
+"%~dp0sireum.bat" slang run -s "%0" %*
 exit /B %errorlevel%
 ::!#
 // #Sireum
@@ -21,15 +53,15 @@ def usage(): Unit = {
 
 
 var isDev = F
-if (Os.cliArgs.size > 2) {
+if (Os.cliArgs.size > 1) {
   usage()
   Os.exit(0)
-} else if (Os.cliArgs.size == 2) {
-  if (Os.cliArgs(1) == "dev") {
+} else if (Os.cliArgs.size == 1) {
+  if (Os.cliArgs(0) == "dev") {
     isDev = T
   } else {
     usage()
-    eprintln(s"Unrecognized command: ${Os.cliArgs(1)}")
+    eprintln(s"Unrecognized command: ${Os.cliArgs(0)}")
     Os.exit(-1)
   }
 }
@@ -37,10 +69,10 @@ if (Os.cliArgs.size > 2) {
 
 def checkDeps(): Unit = {
   var missing = ISZ[String]()
-  if (!Os.proc(ISZ("7z")).run().ok) {
+  if (isDev && !Os.proc(ISZ("7z")).run().ok) {
     missing = missing :+ "7z"
   }
-  if (isDev && !Os.proc(ISZ("git", "--version")).run().ok) {
+  if (!Os.proc(ISZ("git", "--version")).run().ok) {
     missing = missing :+ "git"
   }
   if (missing.nonEmpty) {
@@ -50,8 +82,7 @@ def checkDeps(): Unit = {
 }
 checkDeps()
 
-
-val homeBin = Os.path(Os.cliArgs(0))
+val homeBin: Os.Path = Os.slashDir
 val home = homeBin.up
 val sireumModule = home / "sireum" / "src" / "org" / "sireum" / "mill" / "SireumModule.scala"
 
@@ -234,7 +265,7 @@ def dev(): Unit = {
 
 downloadMillRelease()
 
-if (Os.cliArgs.size == 1) {
+if (Os.cliArgs.isEmpty) {
   standalone()
 } else {
   dev()

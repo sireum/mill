@@ -22,3 +22,5 @@ target
 /bin/win
 /bin/scala
 /lib
+*.cmd.jar
+*.cmd.com
