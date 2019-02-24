@@ -252,7 +252,12 @@ def dev(): Unit = {
   Os.proc(ISZ(if (Os.isWin) millStandaloneBatch.string else millStandaloneSh.string, "dev.assembly")).at(home / "git").runCheck()
   val name: String = if (Os.isWin) "mill.bat" else "mill"
   val millJar = home / "mill.jar"
-  (home / "git" / "out" / "dev" / "assembly" / "dest" / name).copyOverTo(millJar)
+  val dest = home / "git" / "out" / "dev" / "assembly" / "dest"
+  val vmoptions = dest / "mill.vmoptions"
+  (dest / name).copyOverTo(millJar)
+  if (vmoptions.exists) {
+    vmoptions.copyOverTo(home / vmoptions.name)
+  }
   madeInteractive(millJar, millBatch, millSh)
   millJar.removeAll()
   println("Testing mill dev ...")
