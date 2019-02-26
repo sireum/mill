@@ -1,6 +1,8 @@
 /out
 /mill
 /mill.bat
+/bin/mill
+/bin/mill.bat
 /mill.vmoptions
 /mill-standalone
 /mill-standalone.bat
