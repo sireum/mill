@@ -444,7 +444,7 @@ object SireumModule {
 
   trait JvmOnly extends Jvm { outer =>
 
-    final override def millSourcePath = super.millSourcePath / platformSegment
+    override def millSourcePath = super.millSourcePath / platformSegment
 
     def crossDeps: Seq[Project.CrossJvmJs]
 
@@ -465,7 +465,7 @@ object SireumModule {
 
   trait JsOnly extends Js { outer =>
 
-    final override def millSourcePath = super.millSourcePath / platformSegment
+    override def millSourcePath = super.millSourcePath / platformSegment
 
     def crossDeps: Seq[Project.CrossJvmJs]
 
