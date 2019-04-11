@@ -205,7 +205,8 @@ def standalone(): Unit = {
 
   println("Building SireumModule ...")
   (home / "out").removeAll()
-  Os.proc(ISZ(millRelease.string, "-i", "sireum.jar")).at(home).runCheck()
+  Os.proc((if (Os.isWin) ISZ[String]("cmd", "/c") else ISZ[String]("sh")) ++
+    ISZ(millRelease.string, "-i", "sireum.jar")).at(home).runCheck()
 
   println("Packaging mill-standalone ...")
   val temp = home / "temp"
