@@ -150,28 +150,17 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     }
     return T
   }
-  def lines12(c: C): B = {
-    return linesN(12, c)
+  def lines16(c: C): B = {
+    return linesN(16, c)
   }
-  def lines11(c: C): B = {
-    return linesN(11, c)
-  }
-  def lines22(b: U8): B = {
-    if (b == u8"10") {
-      lines = lines + 1
-      if (lines == 22) {
-        lines = 0
-        return F
-      }
-    }
-    return T
+  def lines14(c: C): B = {
+    return linesN(14, c)
   }
   val headerStream = millJar.readCStream
-  val bashHeader: ISZ[C] = headerStream.takeWhile(lines12 _).toISZ
-  val batchHeader: ISZ[C] = headerStream.dropWhile(lines12 _).takeWhile(lines11 _).toISZ
+  val bashHeader: ISZ[C] = headerStream.takeWhile(lines16 _).toISZ
+  val batchHeader: ISZ[C] = headerStream.dropWhile(lines16 _).takeWhile(lines14 _).toISZ
   millBat.write(ops.StringOps.replaceAllLiterally(bashHeader, "mill.main.client.MillClientMain", "mill.MillMain"))
   millBat.writeAppend(ops.StringOps.replaceAllLiterally(batchHeader, "mill.main.client.MillClientMain", "mill.MillMain"))
-  millBat.writeAppend("\r\n")
   val content = millJar.readU8s
   val size = content.size
   lines = 0
@@ -188,7 +177,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     }
     return 0
   }
-  millBat.writeAppendU8s(ops.ISZOps(content).slice(findLinesIndex(22) + 1, size))
+  millBat.writeAppendU8s(ops.ISZOps(content).slice(findLinesIndex(29) + 1, size))
   millBat.chmod("+x")
   mill.write("#!/bin/bash\n")
   mill.writeAppendU8s(millBat.readU8s)
