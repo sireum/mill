@@ -161,6 +161,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   val batchHeader: ISZ[C] = headerStream.dropWhile(lines16 _).takeWhile(lines14 _).toISZ
   millBat.write(ops.StringOps.replaceAllLiterally(bashHeader, "mill.main.client.MillClientMain", "mill.MillMain"))
   millBat.writeAppend(ops.StringOps.replaceAllLiterally(batchHeader, "mill.main.client.MillClientMain", "mill.MillMain"))
+  millBat.writeAppend("\r\n")
   val content = millJar.readU8s
   val size = content.size
   lines = 0
