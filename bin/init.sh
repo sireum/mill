@@ -11,6 +11,8 @@ download() {
     exit 1
   fi
 }
-$(download prelude.sh https://raw.githubusercontent.com/sireum/kekinian/master/bin/init.sh)
-chmod +x prelude.sh
+if [[ ! -x prelude.sh ]]; then
+  $(download prelude.sh https://raw.githubusercontent.com/sireum/kekinian/master/bin/init.sh)
+  chmod +x prelude.sh
+fi
 exec ./prelude.sh
