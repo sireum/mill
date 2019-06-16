@@ -258,11 +258,16 @@ object SireumModule {
         defaultSourceDirs() ++ additionalSourceDirs()
       )
 
-      final override def nodeJSConfig = T {
+      final override def jsEnvConfig = T {
+        import mill.scalajslib.api.JsEnvConfig
         val size = System.getenv("NODEJS_MAX_HEAP")
-        val config = super.nodeJSConfig()
+        val config = super.jsEnvConfig()
         if (size != null)
-          config.copy(args = config.args ++ List(s"--max-old-space-size=$size"))
+          config match {
+            case config: JsEnvConfig.NodeJs => config.copy(args = config.args ++ List(s"--max-old-space-size=$size"))
+            case config: JsEnvConfig.JsDom => config
+            case config: JsEnvConfig.Phantom => config
+          }
         else
           config
       }
@@ -291,7 +296,7 @@ object SireumModule {
           defaultSourceDirs() ++ additionalTestSourceDirs()
         )
 
-        final override def nodeJSConfig = T { outer.nodeJSConfig() }
+        final override def jsEnvConfig = T { outer.jsEnvConfig() }
 
         override def repositories = super.repositories ++ SireumModule.repositories
       }
