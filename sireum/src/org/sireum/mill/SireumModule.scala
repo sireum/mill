@@ -162,6 +162,8 @@ object SireumModule {
 
   lazy val parboiled2Version = property("org.sireum.version.parboiled2")
 
+  lazy val parCollectionVersion = property("org.sireum.version.parcollection")
+
   lazy val java8CompatVersion = property("org.sireum.version.java8compat")
 
   lazy val osLibVersion = property("org.sireum.version.os-lib")
