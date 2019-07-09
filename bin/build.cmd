@@ -127,7 +127,7 @@ def downloadMillRelease(): Unit = {
   }
   if (!millRelease.exists) {
     println(s"Please wait while downloading mill $millVersion ...")
-    millRelease.downloadFrom(s"https://github.com/lihaoyi/mill/releases/download/$millRel/$millVersion")
+    millRelease.downloadFrom(s"https://github.com/lihaoyi/mill/releases/download/$millRel/$millVersion-assembly")
     millRelease.chmod("+x")
     println()
   }
