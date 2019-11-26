@@ -148,17 +148,56 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     }
     return T
   }
-  def lines16(c: C): B = {
+  def lines2(c: C): B = {
+    return linesN(2, c)
+  }
+  def lines5(c: C): B = {
+    return linesN(5, c)
+  }
+  def lines9(c: C): B = {
+    return linesN(9, c)
+  }
+  def lines15(c: C): B = {
+    return linesN(15, c)
+  }
+  def lines17(c: C): B = {
     return linesN(16, c)
   }
-  def lines14(c: C): B = {
-    return linesN(14, c)
+  def lines21(c: C): B = {
+    return linesN(21, c)
   }
   val headerStream = millJar.readCStream
-  val bashHeader: ISZ[C] = headerStream.takeWhile(lines16 _).toISZ
-  val batchHeader: ISZ[C] = headerStream.dropWhile(lines16 _).takeWhile(lines14 _).toISZ
-  millBat.write(ops.StringOps.replaceAllLiterally(bashHeader, "mill.main.client.MillClientMain", "mill.MillMain"))
-  millBat.writeAppend(ops.StringOps.replaceAllLiterally(batchHeader, "mill.main.client.MillClientMain", "mill.MillMain"))
+  val bashHeader1: ISZ[C] = headerStream.takeWhile(lines2 _).toISZ
+  val bashHeader2: ISZ[C] = headerStream.dropWhile(lines2 _).takeWhile(lines15 _).toISZ
+  val batchHeader1: ISZ[C] = headerStream.dropWhile(lines17 _).takeWhile(lines5 _).toISZ
+  val batchHeader2: ISZ[C] = headerStream.dropWhile(lines21 _).takeWhile(lines9 _).toISZ
+  millBat.write(conversions.String.fromCis(bashHeader1))
+  millBat.writeAppend("\n")
+  millBat.writeAppend(ops.StringOps(
+    st"""if [[ -n $${SIREUM_PROVIDED_SCALA} ]]; then
+        |  SIREUM_PROVIDED_JAVA=true
+        |fi
+        |if [[ -n $${SIREUM_HOME} ]]; then
+        |  if [ -n "$$COMSPEC" -a -x "$$COMSPEC" ]; then
+        |    if [[ -z $${SIREUM_PROVIDED_JAVA} ]]; then
+        |      export JAVA_HOME="$${SIREUM_HOME}/bin/win/java"
+        |    fi
+        |  elif [[ "$$(uname)" == "Darwin" ]]; then
+        |    if [[ -z $${SIREUM_PROVIDED_JAVA} ]]; then
+        |      export JAVA_HOME="$${SIREUM_HOME}/bin/mac/java"
+        |    fi
+        |  elif [[ "$$(expr substr $$(uname -s) 1 5)" == "Linux" ]]; then
+        |    if [[ -z $${SIREUM_PROVIDED_JAVA} ]]; then
+        |      export JAVA_HOME="$${SIREUM_HOME}/bin/linux/java"
+        |    fi
+        |  fi
+        |fi""".render).replaceAllLiterally("\r\n", "\n")
+  )
+  millBat.writeAppend(ops.StringOps.replaceAllLiterally(bashHeader2, "mill.main.client.MillClientMain", "mill.MillMain"))
+  millBat.writeAppend(conversions.String.fromCis(batchHeader1))
+  millBat.writeAppend("\r\n")
+  millBat.writeAppend("""if not "%SIREUM_HOME%"=="" set "JAVA_HOME=%SIREUM_HOME%\bin\win\java"""")
+  millBat.writeAppend(ops.StringOps.replaceAllLiterally(batchHeader2, "mill.main.client.MillClientMain", "mill.MillMain"))
   millBat.writeAppend("\r\n")
   val content = millJar.readU8s
   val size = content.size
