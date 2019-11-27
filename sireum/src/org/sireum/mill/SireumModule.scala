@@ -172,6 +172,8 @@ object SireumModule {
 
   lazy val nuProcessVersion = property("org.sireum.version.nuprocess")
 
+  lazy val githubVersion = property("org.sireum.version.github")
+
   sealed trait Project
 
   object Project {
