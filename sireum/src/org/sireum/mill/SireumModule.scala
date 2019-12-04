@@ -63,8 +63,7 @@ object SireumModule {
   val isSourceDep: Boolean = "false" != System.getenv("SIREUM_SOURCE_BUILD")
 
   val repositories: Seq[coursier.Repository] = Seq(
-    coursier.maven.MavenRepository("https://jitpack.io"),
-    coursier.maven.MavenRepository("http://bits.netbeans.org/maven2")
+    coursier.maven.MavenRepository("https://jitpack.io")
   )
 
   object Developers {
@@ -177,13 +176,7 @@ object SireumModule {
 
   lazy val githubVersion = property("org.sireum.version.github")
 
-  lazy val dmgExtractorVersion = property("org.sireum.version.dmgextractor")
-
-  lazy val isoToolsVersion = property("org.sireum.version.isotools")
-
   lazy val jgitVersion = property("org.sireum.version.jgit")
-
-  lazy val compressVersion = property("org.sireum.version.compress")
 
   sealed trait Project
 
