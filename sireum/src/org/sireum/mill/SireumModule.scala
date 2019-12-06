@@ -60,6 +60,8 @@ trait SireumModule extends mill.scalalib.JavaModule {
 
 object SireumModule {
 
+  val date: String = new java.text.SimpleDateFormat("yyyyMMdd").format(new java.util.Date)
+
   val isSourceDep: Boolean = "false" != System.getenv("SIREUM_SOURCE_BUILD")
 
   val repositories: Seq[coursier.Repository] = Seq(
@@ -89,7 +91,7 @@ object SireumModule {
   }
 
   def publishVersion: String =
-    try %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim.substring(0, 10) catch {
+    try s"""4.${SireumModule.date}.${%%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim.substring(0, 7)}""" catch {
       case _: Throwable => "SNAPSHOT"
     }
 
@@ -210,7 +212,7 @@ object SireumModule {
       final override def sources = T.sources(
         defaultSourceDirs() ++ additionalSourceDirs()
       )
-
+      final override def artifactSuffix: T[String] = T { "" }
       def tests: Tests
 
       trait Tests extends super.Tests {
@@ -279,6 +281,8 @@ object SireumModule {
         else
           config
       }
+
+      final override def artifactSuffix: T[String] = T { "-sjs" }
 
       def tests: Tests
 
