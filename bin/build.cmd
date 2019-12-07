@@ -65,11 +65,23 @@ if (Os.cliArgs.size > 1) {
   }
 }
 
+val homeBin: Os.Path = Os.slashDir
+val home = homeBin.up
+val z7: String = {
+  val (plat, exe): (String, String) = Os.kind match {
+    case Os.Kind.Mac => ("mac", "7za")
+    case Os.Kind.Linux => ("linux", "7za")
+    case Os.Kind.Win => ("win", "7za.exe")
+    case _ => ("unsupported", "")
+  }
+  val f = home.up / plat / exe
+  if (f.exists) f.value else "7z"
+}
 
 def checkDeps(): Unit = {
   var missing = ISZ[String]()
-  if (isDev && !Os.proc(ISZ("7z")).run().ok) {
-    missing = missing :+ "7z"
+  if (isDev && !Os.proc(ISZ(z7)).run().ok) {
+    missing = missing :+ z7
   }
   if (!Os.proc(ISZ("git", "--version")).run().ok) {
     missing = missing :+ "git"
@@ -81,8 +93,6 @@ def checkDeps(): Unit = {
 }
 checkDeps()
 
-val homeBin: Os.Path = Os.slashDir
-val home = homeBin.up
 val sireumModule = home / "sireum" / "src" / "org" / "sireum" / "mill" / "SireumModule.scala"
 
 val millVers = ops.StringOps((home / "mill-version.txt").readLineStream.take(1).toISZ(0)).split(c => c.isWhitespace)
@@ -238,7 +248,7 @@ def standalone(): Unit = {
   val temp = home / "temp"
   temp.removeAll()
   temp.mkdirAll()
-  Os.proc(ISZ("7z", "x", (home / "out" / "sireum" / "jar" / "dest" / "out.jar").string)).at(temp).runCheck()
+  Os.proc(ISZ(z7, "x", (home / "out" / "sireum" / "jar" / "dest" / "out.jar").string)).at(temp).runCheck()
   (temp / "META-INF").removeAll()
   val manifest = temp / "META-INF" / "MANIFEST.MF"
   manifest.removeAll()
@@ -251,7 +261,7 @@ def standalone(): Unit = {
   millJar.removeAll()
   millRelease.copyTo(millJar)
   val files: ISZ[String] = for (p <- temp.list) yield p.name
-  Os.proc(ISZ[String]("7z", "a", millJar.string) ++ files).at(temp).runCheck()
+  Os.proc(ISZ[String](z7, "a", millJar.string) ++ files).at(temp).runCheck()
   temp.removeAll()
   madeInteractive(millJar, millStandaloneBatch, millStandaloneSh)
   millJar.removeAll()
