@@ -197,6 +197,15 @@ object SireumModule {
 
       final override def scalacOptions = T { scalacOpts }
 
+      final override def docJar = T {
+        val outDir = T.ctx().dest
+
+        val javadocDir = outDir / 'javadoc
+        os.makeDir.all(javadocDir)
+
+        mill.eval.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
+      }
+
       def platformSegment: String
 
       def deps: Seq[Jvm]
@@ -253,6 +262,15 @@ object SireumModule {
       final override def javacOptions = T { javacOpts }
 
       final override def scalacOptions = T { scalacOpts }
+
+      final override def docJar = T {
+        val outDir = T.ctx().dest
+
+        val javadocDir = outDir / 'javadoc
+        os.makeDir.all(javadocDir)
+
+        mill.eval.Result.Success(mill.modules.Jvm.createJar(Agg(javadocDir))(outDir))
+      }
 
       def deps: Seq[Js]
 
