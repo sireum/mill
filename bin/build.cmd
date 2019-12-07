@@ -206,7 +206,11 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   millBat.writeAppend(ops.StringOps.replaceAllLiterally(bashHeader2, "mill.main.client.MillClientMain", "mill.MillMain"))
   millBat.writeAppend(conversions.String.fromCis(batchHeader1))
   millBat.writeAppend("\r\n")
-  millBat.writeAppend("""if not "%SIREUM_HOME%"=="" set "JAVA_HOME=%SIREUM_HOME%\bin\win\java"""")
+  millBat.writeAppend(
+    st"""if not "%SIREUM_HOME%"=="" (
+        |  set "JAVA_HOME=%SIREUM_HOME%\bin\win\java"
+        |  set "PATH=%SIREUM_HOME%\bin\win\java\bin;%PATH%"
+        |)""".render)
   millBat.writeAppend(ops.StringOps.replaceAllLiterally(batchHeader2, "mill.main.client.MillClientMain", "mill.MillMain"))
   millBat.writeAppend("\r\n")
   val content = millJar.readU8s
