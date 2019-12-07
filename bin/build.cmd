@@ -174,20 +174,20 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   millBat.write(conversions.String.fromCis(bashHeader1))
   millBat.writeAppend("\n")
   millBat.writeAppend(ops.StringOps(
-    st"""if [[ -n $${SIREUM_PROVIDED_SCALA} ]]; then
+    st"""if [ -n $${SIREUM_PROVIDED_SCALA} ]; then
         |  SIREUM_PROVIDED_JAVA=true
         |fi
-        |if [[ -n $${SIREUM_HOME} ]]; then
+        |if [ -n $${SIREUM_HOME} ]; then
         |  if [ -n "$$COMSPEC" -a -x "$$COMSPEC" ]; then
-        |    if [[ -z $${SIREUM_PROVIDED_JAVA} ]]; then
+        |    if [ -z $${SIREUM_PROVIDED_JAVA} ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/win/java"
         |    fi
-        |  elif [[ "$$(uname)" == "Darwin" ]]; then
-        |    if [[ -z $${SIREUM_PROVIDED_JAVA} ]]; then
+        |  elif [ "$$(uname)" = "Darwin" ]; then
+        |    if [ -z $${SIREUM_PROVIDED_JAVA} ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/mac/java"
         |    fi
-        |  elif [[ "$$(expr substr $$(uname -s) 1 5)" == "Linux" ]]; then
-        |    if [[ -z $${SIREUM_PROVIDED_JAVA} ]]; then
+        |  elif [ "$$(expr substr $$(uname -s) 1 5)" = "Linux" ]; then
+        |    if [ -z $${SIREUM_PROVIDED_JAVA} ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/linux/java"
         |    fi
         |  fi
@@ -217,7 +217,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   }
   millBat.writeAppendU8s(ops.ISZOps(content).slice(findLinesIndex(29) + 1, size))
   millBat.chmod("+x")
-  mill.write("#!/bin/bash\n")
+  mill.write("#!/bin/sh\n")
   mill.writeAppendU8s(millBat.readU8s)
   mill.chmod("+x")
 }
