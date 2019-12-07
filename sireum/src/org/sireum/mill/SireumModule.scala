@@ -100,6 +100,11 @@ object SireumModule {
       case _: Throwable => "SNAPSHOT"
     }
 
+  def jitpackVersion: String =
+    try %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim.substring(0, 10) catch {
+      case _: Throwable => "SNAPSHOT"
+    }
+
   def ghLatestCommit(owner: String, repo: String, branch: String): String = {
     val out = %%('git, "ls-remote", s"https://github.com/$owner/$repo.git")(pwd).out
     for (line <- out.lines if line.contains(s"refs/heads/$branch"))
@@ -120,7 +125,7 @@ object SireumModule {
     }
   }
 
-  final def jitPack(owner: String, repo: String, lib: String, hash: String = publishVersion): Unit = {
+  final def jitPack(owner: String, repo: String, lib: String, hash: String = jitpackVersion): Unit = {
     val dirFile = java.nio.file.Files.createTempDirectory(null).toFile.getAbsoluteFile
     dirFile.deleteOnExit()
     val dir = Path(dirFile)
@@ -136,8 +141,12 @@ object SireumModule {
          |  )
          |}""".stripMargin)
     cp(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
-    %(new java.io.File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI).getCanonicalPath,
-      "jptest.compile")(dir)
+    if (scala.util.Properties.isWin)
+      %("cmd", "/c", new java.io.File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI).getCanonicalPath,
+        "jptest.compile")(dir)
+    else
+      %("sh", new java.io.File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI).getCanonicalPath,
+        "jptest.compile")(dir)
   }
 
   private def property(key: String): String = {
