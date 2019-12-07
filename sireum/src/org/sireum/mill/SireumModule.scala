@@ -64,9 +64,14 @@ object SireumModule {
 
   val isSourceDep: Boolean = "false" != System.getenv("SIREUM_SOURCE_BUILD")
 
-  val repositories: Seq[coursier.Repository] = Seq(
-    coursier.maven.MavenRepository("https://jitpack.io")
-  )
+  val repositories: Seq[coursier.Repository] =
+    Seq(coursier.maven.MavenRepository("https://jitpack.io")) ++
+      ((sys.env.get("GITHUB_USERNAME"), sys.env.get("GITHUB_TOKEN")) match {
+        case (Some(username), Some(token)) =>
+          Seq(coursier.maven.MavenRepository("https://maven.pkg.github.com/sireum",
+              authentication = Some(coursier.core.Authentication(username, token))))
+        case _ => Seq()
+      })
 
   object Developers {
 
@@ -91,7 +96,7 @@ object SireumModule {
   }
 
   def publishVersion: String =
-    try s"""4.${SireumModule.date}.${%%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim.substring(0, 7)}""" catch {
+    try %%('git, 'log, "-1", "--date=format:%Y%m%d", "--pretty=format:4.%cd.%h")(pwd).out.lines.head.trim catch {
       case _: Throwable => "SNAPSHOT"
     }
 
