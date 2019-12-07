@@ -212,7 +212,7 @@ object SireumModule {
       final override def sources = T.sources(
         defaultSourceDirs() ++ additionalSourceDirs()
       )
-      final override def artifactSuffix: T[String] = T { "" }
+
       def tests: Tests
 
       trait Tests extends super.Tests {
@@ -282,8 +282,6 @@ object SireumModule {
           config
       }
 
-      final override def artifactSuffix: T[String] = T { "-sjs" }
-
       def tests: Tests
 
       trait Tests extends super.Tests {
@@ -324,7 +322,6 @@ object SireumModule {
       override def publishVersion: T[String] = T { SireumModule.publishVersion }
 
       final def m2 = T {
-        assert(!isSourceDep, "m2 is not allowed in source dependency mode.")
         val pa = publishArtifacts()
         val group: Seq[String] = pa.meta.group.split("\\.") match {
           case Array("org", "sireum", _, rest @ _*) => Seq("org", "sireum") ++ rest
@@ -342,7 +339,7 @@ object SireumModule {
         licenses = Seq(
           License("BSD 2-Clause \"Simplified\" License",
             "BSD-2-Clause",
-            s"https://github.com/sireum/$subUrl/blob/master/license.txt",
+            s"https://github.com/sireum/kekinian/blob/master/license.txt",
             isOsiApproved = true,
             isFsfLibre = false,
             "repo")),
@@ -452,11 +449,52 @@ object SireumModule {
 
   }
 
+  trait JvmPublishOnly extends JvmPublish { outer =>
+
+    override def millSourcePath = super.millSourcePath / platformSegment
+
+    def crossDeps: Seq[Project.CrossJvmJsPublish]
+
+    final override def moduleDeps = mDeps
+
+    final def mDeps =
+      ((for (dep <- crossDeps)
+        yield Seq(dep.shared, dep.jvm)).flatten ++ deps).distinct
+
+    trait Tests extends super.Tests {
+
+      final override def moduleDeps =
+        (Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+          testDeps ++ outer.testDeps).distinct
+
+    }
+
+  }
+
   trait JsPublish extends Project.JsPublish {
 
     final override def platformSegment = "js"
 
     final override def scalaJSVersion = T { scalaJsVersion }
+  }
+
+  trait JsPublishOnly extends JsPublish { outer =>
+
+    override def millSourcePath = super.millSourcePath / platformSegment
+
+    def crossDeps: Seq[Project.CrossJvmJsPublish]
+
+    final override def moduleDeps = mDeps
+
+    final def mDeps = ((for (dep <- crossDeps) yield dep.js) ++ deps).distinct
+
+    trait Tests extends super.Tests {
+
+      final override def moduleDeps =
+        (Seq(outer) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
+          testDeps ++ outer.testDeps).distinct
+
+    }
   }
 
   trait JvmOnly extends Jvm { outer =>
@@ -700,6 +738,8 @@ object SireumModule {
         name
       }
 
+      final def crossDeps: Seq[Project.CrossJvmJsPublish] = Seq()
+
       final def mDeps =
         (Seq(shared) ++ (for (dep <- outer.deps)
           yield Seq(dep.shared, dep.jvm)).flatten ++ jvmDeps).distinct
@@ -755,6 +795,8 @@ object SireumModule {
         assert(name != null, s"Cannot publish ${millModuleSegments.parts.mkString(".")}")
         name
       }
+
+      final def crossDeps: Seq[Project.CrossJvmJsPublish] = Seq()
 
       final def mDeps = ((for (dep <- outer.deps) yield dep.js) ++ jsDeps).distinct
 
