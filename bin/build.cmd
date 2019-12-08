@@ -184,20 +184,20 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   millBat.write(conversions.String.fromCis(bashHeader1))
   millBat.writeAppend("\n")
   millBat.writeAppend(ops.StringOps(
-    st"""if [ -n $${SIREUM_PROVIDED_SCALA} ]; then
+    st"""if [ "x$${SIREUM_PROVIDED_SCALA}" != "x" ]; then
         |  SIREUM_PROVIDED_JAVA=true
         |fi
-        |if [ -n $${SIREUM_HOME} ]; then
+        |if [ "x$${SIREUM_HOME}" != "x" ]; then
         |  if [ -n "$$COMSPEC" -a -x "$$COMSPEC" ]; then
-        |    if [ -z $${SIREUM_PROVIDED_JAVA} ]; then
+        |    if [ "x$${SIREUM_PROVIDED_JAVA}" = "x" ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/win/java"
         |    fi
         |  elif [ "$$(uname)" = "Darwin" ]; then
-        |    if [ -z $${SIREUM_PROVIDED_JAVA} ]; then
+        |    if [ "x$${SIREUM_PROVIDED_JAVA}" = "x" ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/mac/java"
         |    fi
         |  elif [ "$$(expr substr $$(uname -s) 1 5)" = "Linux" ]; then
-        |    if [ -z $${SIREUM_PROVIDED_JAVA} ]; then
+        |    if [ "x$${SIREUM_PROVIDED_JAVA}" = "x" ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/linux/java"
         |    fi
         |  fi
