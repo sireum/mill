@@ -191,14 +191,17 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
         |  if [ -n "$$COMSPEC" -a -x "$$COMSPEC" ]; then
         |    if [ "x$${SIREUM_PROVIDED_JAVA}" = "x" ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/win/java"
+        |      export PATH="$${JAVA_HOME}/bin":$$PATH
         |    fi
         |  elif [ "$$(uname)" = "Darwin" ]; then
         |    if [ "x$${SIREUM_PROVIDED_JAVA}" = "x" ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/mac/java"
-        |    fi
+        |      export PATH="$${JAVA_HOME}/bin":$$PATH
+        |        |    fi
         |  elif [ "$$(expr substr $$(uname -s) 1 5)" = "Linux" ]; then
         |    if [ "x$${SIREUM_PROVIDED_JAVA}" = "x" ]; then
         |      export JAVA_HOME="$${SIREUM_HOME}/bin/linux/java"
+        |      export PATH="$${JAVA_HOME}/bin":$$PATH
         |    fi
         |  fi
         |fi""".render).replaceAllLiterally("\r\n", "\n")
