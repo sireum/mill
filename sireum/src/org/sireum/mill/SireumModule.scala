@@ -194,6 +194,8 @@ object SireumModule {
 
   lazy val jgitVersion = property("org.sireum.version.jgit")
 
+  lazy val javaFxVersion = property("org.sireum.version.javafx")
+
   sealed trait Project
 
   object Project {
