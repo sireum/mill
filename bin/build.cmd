@@ -74,7 +74,7 @@ val z7: String = {
     case Os.Kind.Win => ("win", "7za.exe")
     case _ => ("unsupported", "")
   }
-  val f = home.up / plat / exe
+  val f = home.up / "bin" / plat / exe
   if (f.exists) f.value else "7z"
 }
 
