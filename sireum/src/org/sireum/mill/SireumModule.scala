@@ -294,8 +294,7 @@ object SireumModule {
       def testFrameworks: Seq[String]
 
       private def defaultSourceDirs = T.sources(
-        millSourcePath / "src" / "main" / "scala",
-        millSourcePath / up / "shared" / "src" / "main" / "scala"
+        millSourcePath / "src" / "main" / "scala"
       )
 
       final override def sources = T.sources(
@@ -332,8 +331,7 @@ object SireumModule {
         final override def testFrameworks = T { outer.testFrameworks.distinct }
 
         private def defaultSourceDirs = T.sources(
-          millSourcePath / "scala",
-          millSourcePath / up / up / up / "shared" / "src" / "test" / "scala"
+          millSourcePath / "scala"
         )
 
         final override def sources = T.sources(
@@ -649,11 +647,39 @@ object SireumModule {
 
       final def mDeps = ((for (dep <- outer.deps) yield dep.js) ++ jsDeps).distinct
 
+      def sharedSources = T.sources(
+        millSourcePath / up / "shared" / "src" / "main" / "scala"
+      )
+
+      override def allSourceFiles = T {
+        def isHiddenFile(path: os.Path) = path.last.startsWith(".")
+        for {
+          root <- allSources() ++ sharedSources()
+          if os.exists(root.path)
+          path <- (if (os.isDir(root.path)) os.walk(root.path) else Seq(root.path))
+          if os.isFile(path) && ((path.ext == "scala" || path.ext == "java") && !isHiddenFile(path))
+        } yield PathRef(path)
+      }
+
       object tests extends Tests {
 
         final override def moduleDeps =
           (Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
             testDeps ++ jsTestDeps).distinct
+
+        def sharedSources = T.sources(
+          millSourcePath / up / up / up / "shared" / "src" / "test" / "scala"
+        )
+
+        override def allSourceFiles = T {
+          def isHiddenFile(path: os.Path) = path.last.startsWith(".")
+          for {
+            root <- allSources() ++ sharedSources()
+            if os.exists(root.path)
+            path <- (if (os.isDir(root.path)) os.walk(root.path) else Seq(root.path))
+            if os.isFile(path) && ((path.ext == "scala" || path.ext == "java") && !isHiddenFile(path))
+          } yield PathRef(path)
+        }
 
       }
     }
@@ -834,7 +860,35 @@ object SireumModule {
 
       final def mDeps = ((for (dep <- outer.deps) yield dep.js) ++ jsDeps).distinct
 
+      def sharedSources = T.sources(
+        millSourcePath / up / "shared" / "src" / "main" / "scala"
+      )
+
+      override def allSourceFiles = T {
+        def isHiddenFile(path: os.Path) = path.last.startsWith(".")
+        for {
+          root <- allSources() ++ sharedSources()
+          if os.exists(root.path)
+          path <- (if (os.isDir(root.path)) os.walk(root.path) else Seq(root.path))
+          if os.isFile(path) && ((path.ext == "scala" || path.ext == "java") && !isHiddenFile(path))
+        } yield PathRef(path)
+      }
+
       object tests extends Tests {
+
+        def sharedSources = T.sources(
+          millSourcePath / up / up / up / "shared" / "src" / "test" / "scala"
+        )
+
+        override def allSourceFiles = T {
+          def isHiddenFile(path: os.Path) = path.last.startsWith(".")
+          for {
+            root <- allSources() ++ sharedSources()
+            if os.exists(root.path)
+            path <- (if (os.isDir(root.path)) os.walk(root.path) else Seq(root.path))
+            if os.isFile(path) && ((path.ext == "scala" || path.ext == "java") && !isHiddenFile(path))
+          } yield PathRef(path)
+        }
 
         final override def moduleDeps =
           (Seq(js) ++ (for (dep <- mDeps) yield Seq(dep, dep.tests) ++ dep.testDeps).flatten ++
