@@ -166,8 +166,6 @@ object SireumModule {
 
   lazy val scalaTestVersion = property("org.sireum.version.scalatest")
 
-  lazy val spireVersion = property("org.sireum.version.spire")
-
   lazy val scalaMetaVersion = property("org.sireum.version.scalameta")
 
   lazy val diffVersion = property("org.sireum.version.diff")
