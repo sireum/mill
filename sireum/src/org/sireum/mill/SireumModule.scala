@@ -176,21 +176,15 @@ object SireumModule {
 
   lazy val scalaTagsVersion = property("org.sireum.version.scalatags")
 
-  lazy val parboiled2Version = property("org.sireum.version.parboiled2")
-
   lazy val parCollectionVersion = property("org.sireum.version.parcollection")
 
   lazy val java8CompatVersion = property("org.sireum.version.java8compat")
 
   lazy val osLibVersion = property("org.sireum.version.os-lib")
 
-  lazy val utestVersion = property("org.sireum.version.utest")
-
   lazy val nuProcessVersion = property("org.sireum.version.nuprocess")
 
   lazy val githubVersion = property("org.sireum.version.github")
-
-  lazy val jgitVersion = property("org.sireum.version.jgit")
 
   lazy val javaFxVersion = property("org.sireum.version.javafx")
 
