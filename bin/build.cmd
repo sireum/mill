@@ -164,24 +164,41 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   def lines5(c: C): B = {
     return linesN(5, c)
   }
+  def lines7(c: C): B = {
+    return linesN(7, c)
+  }
   def lines9(c: C): B = {
     return linesN(9, c)
   }
-  def lines15(c: C): B = {
-    return linesN(15, c)
+  def lines11(c: C): B = {
+    return linesN(11, c)
   }
-  def lines17(c: C): B = {
-    return linesN(16, c)
+  def lines13(c: C): B = {
+    return linesN(13, c)
   }
-  def lines21(c: C): B = {
-    return linesN(21, c)
+  def lines25(c: C): B = {
+    return linesN(25, c)
+  }
+  def lines29(c: C): B = {
+    return linesN(29, c)
   }
   val headerStream = millJar.readCStream
-  val bashHeader1: ISZ[C] = headerStream.takeWhile(lines2 _).toISZ
-  val bashHeader2: ISZ[C] = headerStream.dropWhile(lines2 _).takeWhile(lines15 _).toISZ
-  val batchHeader1: ISZ[C] = headerStream.dropWhile(lines17 _).takeWhile(lines5 _).toISZ
-  val batchHeader2: ISZ[C] = headerStream.dropWhile(lines21 _).takeWhile(lines9 _).toISZ
-  millBat.write(conversions.String.fromCis(bashHeader1))
+  val bashHeader1: String = conversions.String.fromCis(headerStream.takeWhile(lines2 _).toISZ)
+  val bashHeader2: String = conversions.String.fromCis(headerStream.dropWhile(lines2 _).takeWhile(lines7 _).toISZ)
+  val bashHeader3: ISZ[C] = headerStream.dropWhile(lines13 _).takeWhile(lines9 _).toISZ
+  val batchHeader1: String = conversions.String.fromCis(headerStream.dropWhile(lines25 _).takeWhile(lines5 _).toISZ)
+  val batchHeader2: ISZ[C] = headerStream.dropWhile(lines29 _).takeWhile(lines11 _).toISZ
+//  println("Bash header 1")
+//  println(bashHeader1)
+//  println("Bash header 2")
+//  println(bashHeader2)
+//  println("Bash header 3")
+//  println(conversions.String.fromCis(bashHeader3))
+//  println("Batch header 1")
+//  println(batchHeader1)
+//  println("Batch header 2")
+//  println(conversions.String.fromCis(batchHeader2))
+  millBat.write(bashHeader1)
   millBat.writeAppend("\n")
   millBat.writeAppend(ops.StringOps(
     st"""if [ "x$${SIREUM_PROVIDED_SCALA}" != "x" ]; then
@@ -206,8 +223,10 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
         |  fi
         |fi""".render).replaceAllLiterally("\r\n", "\n")
   )
-  millBat.writeAppend(ops.StringOps.replaceAllLiterally(bashHeader2, "mill.main.client.MillClientMain", "mill.MillMain"))
-  millBat.writeAppend(conversions.String.fromCis(batchHeader1))
+  millBat.writeAppend(bashHeader2)
+  millBat.writeAppend(ops.StringOps.replaceAllLiterally(bashHeader3, "mill.main.client.MillClientMain", "mill.MillMain"))
+  millBat.writeAppend("\nexit\n")
+  millBat.writeAppend(batchHeader1)
   millBat.writeAppend("\r\n")
   millBat.writeAppend(
     st"""if not "%SIREUM_HOME%"=="" (
@@ -232,7 +251,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     }
     return 0
   }
-  millBat.writeAppendU8s(ops.ISZOps(content).slice(findLinesIndex(29) + 1, size))
+  millBat.writeAppendU8s(ops.ISZOps(content).slice(findLinesIndex(39) + 1, size))
   millBat.chmod("+x")
   mill.write("#!/bin/sh\n")
   mill.writeAppendU8s(millBat.readU8s)
