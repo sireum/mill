@@ -222,7 +222,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
         |    fi
         |  elif [ "$$(expr substr $$(uname -s) 1 5)" = "Linux" ]; then
         |    if [ "x$${SIREUM_PROVIDED_JAVA}" = "x" ]; then
-        |      if [[ "$$(uname -m)" == "aarch64" ]]; then
+        |      if [ "$$(uname -m)" = "aarch64" ]; then
         |        export JAVA_HOME="$${SIREUM_HOME}/bin/linux/arm/java"
         |      else
         |        export JAVA_HOME="$${SIREUM_HOME}/bin/linux/java"
