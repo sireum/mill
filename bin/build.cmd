@@ -17,7 +17,11 @@ elif [ "$(uname)" = "Darwin" ]; then                                            
   fi                                                                                                        #
 elif [ "$(expr substr $(uname -s) 1 5)" = "Linux" ]; then                                                   #
   if [ -z ${SIREUM_PROVIDED_JAVA++} ]; then                                                                 #
-    export PATH="${SIREUM_HOME}/bin/linux/java/bin":"${SIREUM_HOME}/bin/linux/z3/bin":"$PATH"               #
+    if [[ "$$(uname -m)" == "aarch64" ]]; then                                                              #
+      export PATH="${SIREUM_HOME}/bin/linux/arm/java/bin":"$PATH"                                           #
+    else                                                                                                    #
+      export PATH="${SIREUM_HOME}/bin/linux/java/bin":"${SIREUM_HOME}/bin/linux/z3/bin":"$PATH"             #
+    fi                                                                                                      #
   fi                                                                                                        #
 fi                                                                                                          #
 if [ -f "$0.com" ] && [ "$0.com" -nt "$0" ]; then                                                           #
@@ -240,13 +244,12 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
         |)""".render)
   millBat.writeAppend(ops.StringOps.replaceAllLiterally(batchHeader2, "mill.main.client.MillClientMain", "mill.MillMain"))
   millBat.writeAppend("\r\n")
-  val content = millJar.readU8s
-  val size = content.size
-  lines = 0
   def findLinesIndex(n: Z): Z = {
+    lines = 0
     var i = 0
-    while (i < size) {
-      if (content(i) == u8"10") {
+    val stream: Jen[U8] = millJar.readU8Stream
+    for (e <- stream) {
+      if (e == u8"10") {
         lines = lines + 1
         if (lines == n) {
           return i
@@ -256,7 +259,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     }
     return 0
   }
-  millBat.writeAppendU8s(ops.ISZOps(content).slice(findLinesIndex(39) + 1, size))
+  millBat.writeAppendU8Stream(millJar.readU8Stream.drop(findLinesIndex(39) + 1))
   millBat.chmod("+x")
   mill.write("#!/bin/sh\n")
   mill.writeAppendU8s(millBat.readU8s)
