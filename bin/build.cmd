@@ -71,6 +71,7 @@ val z7: String = {
   val (plat, exe): (String, String) = Os.kind match {
     case Os.Kind.Mac => ("mac", "7za")
     case Os.Kind.Linux => ("linux", "7za")
+    case Os.Kind.LinuxArm => ("linux/arm", "7za")
     case Os.Kind.Win => ("win", "7za.exe")
     case _ => ("unsupported", "")
   }
