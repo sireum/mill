@@ -190,23 +190,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   }
   val headerStream = millJar.readCStream
   val bashHeader1: String = conversions.String.fromCis(headerStream.takeWhile(lines2 _).toISZ)
-  val bashHeader2: String = conversions.String.fromCis(headerStream.dropWhile(lines2 _).takeWhile(lines7 _).toISZ)
-  val bashHeader3: ISZ[C] = headerStream.dropWhile(lines13 _).takeWhile(lines9 _).toISZ
-  val batchHeader1: String = conversions.String.fromCis(headerStream.dropWhile(lines25 _).takeWhile(lines5 _).toISZ)
-  val batchHeader2: ISZ[C] = headerStream.dropWhile(lines29 _).takeWhile(lines11 _).toISZ
-//  println("Bash header 1")
-//  println(bashHeader1)
-//  println("Bash header 2")
-//  println(bashHeader2)
-//  println("Bash header 3")
-//  println(conversions.String.fromCis(bashHeader3))
-//  println("Batch header 1")
-//  println(batchHeader1)
-//  println("Batch header 2")
-//  println(conversions.String.fromCis(batchHeader2))
-  millBat.write(bashHeader1)
-  millBat.writeAppend("\n")
-  millBat.writeAppend(ops.StringOps(
+  val bashHeader2 = ops.StringOps(
     st"""if [ "x$${SIREUM_PROVIDED_SCALA}" != "x" ]; then
         |  SIREUM_PROVIDED_JAVA=true
         |fi
@@ -232,19 +216,43 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
         |    fi
         |  fi
         |fi""".render).replaceAllLiterally("\r\n", "\n")
-  )
+  val bashHeader3: String = conversions.String.fromCis(headerStream.dropWhile(lines2 _).takeWhile(lines7 _).toISZ)
+  val bashHeader4: String = ops.StringOps.replaceAllLiterally(
+    headerStream.dropWhile(lines13 _).takeWhile(lines9 _).toISZ,
+    "mill.main.client.MillClientMain", "mill.MillMain")
+  val bashHeader5: String = "\nexit\n"
+  val batchHeader1: String = conversions.String.fromCis(headerStream.dropWhile(lines25 _).takeWhile(lines5 _).toISZ)
+  val batchHeader2: String =
+    ops.StringOps(ops.StringOps(
+      st"""if not "%SIREUM_HOME%"=="" (
+          |  set "JAVA_HOME=%SIREUM_HOME%\bin\win\java"
+          |  set "PATH=%SIREUM_HOME%\bin\win\java\bin;%PATH%"
+          |)""".render).replaceAllLiterally("\r\n", "\n")).replaceAllLiterally("\n", "\r\n")
+  val batchHeader3: String = ops.StringOps.replaceAllLiterally(
+    headerStream.dropWhile(lines29 _).takeWhile(lines11 _).toISZ,
+    "mill.main.client.MillClientMain", "mill.MillMain")
+  val batchHeader4: String = "\r\n"
+//  println("Bash header 1")
+//  println(bashHeader1)
+//  println("Bash header 3")
+//  println(bashHeader3)
+//  println("Bash header 4")
+//  println(bashHeader4)
+//  println("Batch header 1")
+//  println(batchHeader1)
+//  println("Batch header 3")
+//  println(batchHeader3))
+  millBat.write(bashHeader1)
+  millBat.writeAppend("\n")
   millBat.writeAppend(bashHeader2)
-  millBat.writeAppend(ops.StringOps.replaceAllLiterally(bashHeader3, "mill.main.client.MillClientMain", "mill.MillMain"))
-  millBat.writeAppend("\nexit\n")
+  millBat.writeAppend(bashHeader3)
+  millBat.writeAppend(bashHeader4)
+  millBat.writeAppend(bashHeader5)
   millBat.writeAppend(batchHeader1)
   millBat.writeAppend("\r\n")
-  millBat.writeAppend(
-    st"""if not "%SIREUM_HOME%"=="" (
-        |  set "JAVA_HOME=%SIREUM_HOME%\bin\win\java"
-        |  set "PATH=%SIREUM_HOME%\bin\win\java\bin;%PATH%"
-        |)""".render)
-  millBat.writeAppend(ops.StringOps.replaceAllLiterally(batchHeader2, "mill.main.client.MillClientMain", "mill.MillMain"))
-  millBat.writeAppend("\r\n")
+  millBat.writeAppend(batchHeader2)
+  millBat.writeAppend(batchHeader3)
+  millBat.writeAppend(batchHeader4)
   def findLinesIndex(n: Z): Z = {
     lines = 0
     var i = 0
@@ -260,10 +268,23 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     }
     return 0
   }
-  millBat.writeAppendU8Stream(millJar.readU8Stream.drop(findLinesIndex(39) + 1))
+  val millJarU8s = millJar.readU8s
+  val offset = findLinesIndex(39) + 1
+  millBat.writeAppendU8Parts(millJarU8s, offset, millJarU8s.size - offset)
   millBat.chmod("+x")
   mill.write("#!/bin/sh\n")
-  mill.writeAppendU8s(millBat.readU8s)
+  mill.writeAppend(bashHeader1)
+  mill.writeAppend("\n")
+  mill.writeAppend(bashHeader2)
+  mill.writeAppend(bashHeader3)
+  mill.writeAppend(bashHeader4)
+  mill.writeAppend(bashHeader5)
+  mill.writeAppend(batchHeader1)
+  mill.writeAppend("\r\n")
+  mill.writeAppend(batchHeader2)
+  mill.writeAppend(batchHeader3)
+  mill.writeAppend(batchHeader4)
+  mill.writeAppendU8Parts(millJarU8s, offset, millJarU8s.size - offset)
   mill.chmod("+x")
 }
 
