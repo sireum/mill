@@ -154,42 +154,24 @@ import org.sireum.U8._
 
 def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   var lines = 0
-  def linesN(n: Z, c: C): B = {
-    if (c == '\n') {
-      lines = lines + 1
-      if (lines == n) {
-        lines = 0
-        return F
+  def linesF(n: Z): U8 => B = {
+    return (c: U8) => {
+      if (c == u8"0xA") {
+        lines = lines + 1
+        if (lines == n) {
+          lines = 0
+          F
+        } else {
+          T
+        }
+      } else {
+        T
       }
     }
-    return T
   }
-  def lines2(c: C): B = {
-    return linesN(2, c)
-  }
-  def lines5(c: C): B = {
-    return linesN(5, c)
-  }
-  def lines7(c: C): B = {
-    return linesN(7, c)
-  }
-  def lines9(c: C): B = {
-    return linesN(9, c)
-  }
-  def lines11(c: C): B = {
-    return linesN(11, c)
-  }
-  def lines13(c: C): B = {
-    return linesN(13, c)
-  }
-  def lines25(c: C): B = {
-    return linesN(25, c)
-  }
-  def lines29(c: C): B = {
-    return linesN(29, c)
-  }
-  val headerStream = millJar.readCStream
-  val bashHeader1: String = conversions.String.fromCis(headerStream.takeWhile(lines2 _).toISZ)
+  val millJarU8s = millJar.readU8s
+  val headerStream = Jen.IS(millJarU8s)
+  val bashHeader1: String = conversions.String.fromU8is(headerStream.takeWhile(linesF(2)).toISZ)
   val bashHeader2 = ops.StringOps(
     st"""if [ "x$${SIREUM_PROVIDED_SCALA}" != "x" ]; then
         |  SIREUM_PROVIDED_JAVA=true
@@ -216,21 +198,21 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
         |    fi
         |  fi
         |fi""".render).replaceAllLiterally("\r\n", "\n")
-  val bashHeader3: String = conversions.String.fromCis(headerStream.dropWhile(lines2 _).takeWhile(lines7 _).toISZ)
-  val bashHeader4: String = ops.StringOps.replaceAllLiterally(
-    headerStream.dropWhile(lines13 _).takeWhile(lines9 _).toISZ,
-    "mill.main.client.MillClientMain", "mill.MillMain")
+  val bashHeader3: String = conversions.String.fromU8is(headerStream.dropWhile(linesF(2)).takeWhile(linesF(7)).toISZ)
+  val bashHeader4: String = ops.StringOps(
+    conversions.String.fromU8is(headerStream.dropWhile(linesF(13)).takeWhile(linesF(9)).toISZ)).
+    replaceAllLiterally("mill.main.client.MillClientMain", "mill.MillMain")
   val bashHeader5: String = "\nexit\n"
-  val batchHeader1: String = conversions.String.fromCis(headerStream.dropWhile(lines25 _).takeWhile(lines5 _).toISZ)
+  val batchHeader1: String = conversions.String.fromU8is(headerStream.dropWhile(linesF(25)).takeWhile(linesF(5)).toISZ)
   val batchHeader2: String =
     ops.StringOps(ops.StringOps(
       st"""if not "%SIREUM_HOME%"=="" (
           |  set "JAVA_HOME=%SIREUM_HOME%\bin\win\java"
           |  set "PATH=%SIREUM_HOME%\bin\win\java\bin;%PATH%"
           |)""".render).replaceAllLiterally("\r\n", "\n")).replaceAllLiterally("\n", "\r\n")
-  val batchHeader3: String = ops.StringOps.replaceAllLiterally(
-    headerStream.dropWhile(lines29 _).takeWhile(lines11 _).toISZ,
-    "mill.main.client.MillClientMain", "mill.MillMain")
+  val batchHeader3: String = ops.StringOps(
+    conversions.String.fromU8is(headerStream.dropWhile(linesF(29)).takeWhile(linesF(11)).toISZ)).
+    replaceAllLiterally("mill.main.client.MillClientMain", "mill.MillMain")
   val batchHeader4: String = "\r\n"
 //  println("Bash header 1")
 //  println(bashHeader1)
@@ -256,9 +238,8 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   def findLinesIndex(n: Z): Z = {
     lines = 0
     var i = 0
-    val stream: Jen[U8] = millJar.readU8Stream
-    for (e <- stream) {
-      if (e == u8"10") {
+    for (e <- headerStream) {
+      if (e == u8"0xA") {
         lines = lines + 1
         if (lines == n) {
           return i
@@ -268,7 +249,6 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     }
     return 0
   }
-  val millJarU8s = millJar.readU8s
   val offset = findLinesIndex(39) + 1
   millBat.writeAppendU8Parts(millJarU8s, offset, millJarU8s.size - offset)
   millBat.chmod("+x")
