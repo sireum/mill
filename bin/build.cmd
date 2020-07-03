@@ -203,7 +203,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     conversions.String.fromU8is(headerStream.dropWhile(linesF(15)).takeWhile(linesF(2)).toISZ)).
     replaceAllLiterally("mill.MillMain \"$@\"", "mill.MillMain --no-server \"$@\"")).trim
   val bashHeader5: String = "\nexit\n"
-  val batchHeader1: String = conversions.String.fromU8is(headerStream.dropWhile(linesF(25)).takeWhile(linesF(5)).toISZ)
+  val batchHeader1: String = ops.StringOps(conversions.String.fromU8is(headerStream.dropWhile(linesF(25)).takeWhile(linesF(5)).toISZ)).trim
   val batchHeader2: String =
     ops.StringOps(ops.StringOps(
       st"""if not "%SIREUM_HOME%"=="" (
@@ -233,6 +233,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   millBat.writeAppend(bashHeader4)
   millBat.writeAppend(bashHeader5)
   millBat.writeAppend(batchHeader1)
+  millBat.writeAppend("\r\n")
   millBat.writeAppend(batchHeader2)
   millBat.writeAppend(batchHeader3)
   millBat.writeAppend(batchHeader4)
@@ -262,6 +263,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   mill.writeAppend(bashHeader4)
   mill.writeAppend(bashHeader5)
   mill.writeAppend(batchHeader1)
+  mill.writeAppend("\r\n")
   mill.writeAppend(batchHeader2)
   mill.writeAppend(batchHeader3)
   mill.writeAppend(batchHeader4)
