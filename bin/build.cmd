@@ -198,10 +198,10 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
         |    fi
         |  fi
         |fi""".render).replaceAllLiterally("\r\n", "\n")
-  val bashHeader3: String = conversions.String.fromU8is(headerStream.dropWhile(linesF(2)).takeWhile(linesF(7)).toISZ)
-  val bashHeader4: String = ops.StringOps(
-    conversions.String.fromU8is(headerStream.dropWhile(linesF(13)).takeWhile(linesF(9)).toISZ)).
-    replaceAllLiterally("mill.main.client.MillClientMain", "mill.MillMain")
+  val bashHeader3: String = conversions.String.fromU8is(headerStream.dropWhile(linesF(2)).takeWhile(linesF(6)).toISZ)
+  val bashHeader4: String = ops.StringOps(ops.StringOps(
+    conversions.String.fromU8is(headerStream.dropWhile(linesF(15)).takeWhile(linesF(2)).toISZ)).
+    replaceAllLiterally("mill.MillMain \"$@\"", "mill.MillMain --no-server \"$@\"")).trim
   val bashHeader5: String = "\nexit\n"
   val batchHeader1: String = conversions.String.fromU8is(headerStream.dropWhile(linesF(25)).takeWhile(linesF(5)).toISZ)
   val batchHeader2: String =
@@ -209,11 +209,12 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
       st"""if not "%SIREUM_HOME%"=="" (
           |  set "JAVA_HOME=%SIREUM_HOME%\bin\win\java"
           |  set "PATH=%SIREUM_HOME%\bin\win\java\bin;%PATH%"
-          |)""".render).replaceAllLiterally("\r\n", "\n")).replaceAllLiterally("\n", "\r\n")
-  val batchHeader3: String = ops.StringOps(
-    conversions.String.fromU8is(headerStream.dropWhile(linesF(29)).takeWhile(linesF(11)).toISZ)).
-    replaceAllLiterally("mill.main.client.MillClientMain", "mill.MillMain")
-  val batchHeader4: String = "\r\n"
+          |)
+          |""".render).replaceAllLiterally("\r\n", "\n")).replaceAllLiterally("\n", "\r\n")
+  val batchHeader3: String = ops.StringOps(ops.StringOps(
+    conversions.String.fromU8is(headerStream.dropWhile(linesF(35)).takeWhile(linesF(2)).toISZ)).
+    replaceAllLiterally("mill.MillMain %*", "mill.MillMain --no-server %*")).trim
+  val batchHeader4: String = "\r\nendlocal\r\nexit /B %errorlevel%\r\n"
 //  println("Bash header 1")
 //  println(bashHeader1)
 //  println("Bash header 3")
@@ -228,10 +229,10 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   millBat.writeAppend("\n")
   millBat.writeAppend(bashHeader2)
   millBat.writeAppend(bashHeader3)
+  millBat.writeAppend("\n")
   millBat.writeAppend(bashHeader4)
   millBat.writeAppend(bashHeader5)
   millBat.writeAppend(batchHeader1)
-  millBat.writeAppend("\r\n")
   millBat.writeAppend(batchHeader2)
   millBat.writeAppend(batchHeader3)
   millBat.writeAppend(batchHeader4)
@@ -249,7 +250,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     }
     return 0
   }
-  val offset = findLinesIndex(39) + 1
+  val offset = findLinesIndex(41) + 1
   millBat.writeAppendU8Parts(millJarU8s, offset, millJarU8s.size - offset)
   millBat.chmod("+x")
   mill.write("#!/bin/sh\n")
@@ -257,10 +258,10 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   mill.writeAppend("\n")
   mill.writeAppend(bashHeader2)
   mill.writeAppend(bashHeader3)
+  mill.writeAppend("\n")
   mill.writeAppend(bashHeader4)
   mill.writeAppend(bashHeader5)
   mill.writeAppend(batchHeader1)
-  mill.writeAppend("\r\n")
   mill.writeAppend(batchHeader2)
   mill.writeAppend(batchHeader3)
   mill.writeAppend(batchHeader4)
