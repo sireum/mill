@@ -201,7 +201,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   val bashHeader3: String = conversions.String.fromU8is(headerStream.dropWhile(linesF(2)).takeWhile(linesF(6)).toISZ)
   val bashHeader4: String = ops.StringOps(ops.StringOps(
     conversions.String.fromU8is(headerStream.dropWhile(linesF(15)).takeWhile(linesF(2)).toISZ)).
-    replaceAllLiterally("mill.MillMain \"$@\"", "mill.MillMain --no-server \"$@\"")).trim
+    replaceAllLiterally("mill.MillMain \"$@\"", "mill.MillMain \"$@\"")).trim
   val bashHeader5: String = "\nexit\n"
   val batchHeader1: String = ops.StringOps(conversions.String.fromU8is(headerStream.dropWhile(linesF(25)).takeWhile(linesF(5)).toISZ)).trim
   val batchHeader2: String =
@@ -213,7 +213,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
           |""".render).replaceAllLiterally("\r\n", "\n")).replaceAllLiterally("\n", "\r\n")
   val batchHeader3: String = ops.StringOps(ops.StringOps(
     conversions.String.fromU8is(headerStream.dropWhile(linesF(35)).takeWhile(linesF(2)).toISZ)).
-    replaceAllLiterally("mill.MillMain %*", "mill.MillMain --no-server %*")).trim
+    replaceAllLiterally("mill.MillMain %*", "mill.MillMain %*")).trim
   val batchHeader4: String = "\r\nendlocal\r\nexit /B %errorlevel%\r\n"
 //  println("Bash header 1")
 //  println(bashHeader1)
