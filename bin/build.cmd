@@ -100,12 +100,13 @@ def checkDeps(): Unit = {
 checkDeps()
 
 val sireumModule = home / "sireum" / "src" / "org" / "sireum" / "mill" / "SireumModule.scala"
+val buildCmd = home / "bin" / "build.cmd"
 
 val millVers = ops.StringOps((home / "mill-version.txt").readLineStream.take(1).toISZ(0)).split(c => c.isWhitespace)
 assert(millVers.size == 1 || millVers.size == 3)
 val millRel = millVers(0)
 val (millN, millHash): (String, String) = if (millVers.size != 1) (millVers(1), millVers(2)) else ("", "")
-val currVer = st"${(millVers, "-")}-${sireumModule.lastModified}".render
+val currVer = st"${(millVers, "-")}-${sireumModule.lastModified}-${buildCmd.lastModified}".render
 val millVersion = st"${(millVers, "-")}".render
 val releasePrefix = "mill-release-"
 val releaseName: String = if (Os.isWin) s"$releasePrefix$millVersion.bat" else s"$releasePrefix$millVersion"
