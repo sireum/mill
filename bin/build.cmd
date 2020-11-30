@@ -211,10 +211,11 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
           |  set "PATH=%SIREUM_HOME%\bin\win\java\bin;%PATH%"
           |)
           |""".render).replaceAllLiterally("\r\n", "\n")).replaceAllLiterally("\n", "\r\n")
-  val batchHeader3: String = ops.StringOps(ops.StringOps(ops.StringOps(
+  val batchHeader3: String = ops.StringOps(conversions.String.fromU8is(headerStream.dropWhile(linesF(49)).takeWhile(linesF(3)).toISZ)).trim
+  val batchHeader4: String = ops.StringOps(ops.StringOps(ops.StringOps(
     conversions.String.fromU8is(headerStream.dropWhile(linesF(67)).takeWhile(linesF(2)).toISZ)).
     replaceAllLiterally("mill.MillMain %*", "mill.MillMain %*")).replaceAllLiterally(" !mill_jvm_opts!", "")).trim
-  val batchHeader4: String = "\r\nendlocal\r\nexit /B %errorlevel%\r\n"
+  val batchHeader5: String = "\r\nendlocal\r\nexit /B %errorlevel%\r\n"
 //  println("Bash header 1")
 //  println(bashHeader1)
 //  println("Bash header 3")
@@ -236,7 +237,9 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   millBat.writeAppend("\r\n")
   millBat.writeAppend(batchHeader2)
   millBat.writeAppend(batchHeader3)
+  millBat.writeAppend("\r\n")
   millBat.writeAppend(batchHeader4)
+  millBat.writeAppend(batchHeader5)
   def findLinesIndex(n: Z): Z = {
     lines = 0
     var i = 0
@@ -266,7 +269,9 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   mill.writeAppend("\r\n")
   mill.writeAppend(batchHeader2)
   mill.writeAppend(batchHeader3)
+  mill.writeAppend("\r\n")
   mill.writeAppend(batchHeader4)
+  mill.writeAppend(batchHeader5)
   mill.writeAppendU8Parts(millJarU8s, offset, millJarU8s.size - offset)
   mill.chmod("+x")
 }
