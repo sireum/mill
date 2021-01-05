@@ -60,8 +60,8 @@ var isDev = F
 if (Os.cliArgs.size > 1) {
   usage()
   Os.exit(0)
-} else if (Os.cliArgs.size == 1) {
-  if (Os.cliArgs(0) == "dev") {
+} else if (Os.cliArgs.size === 1) {
+  if (Os.cliArgs(0) === "dev") {
     isDev = T
   } else {
     usage()
@@ -103,7 +103,7 @@ val sireumModule = home / "sireum" / "src" / "org" / "sireum" / "mill" / "Sireum
 val buildCmd = home / "bin" / "build.cmd"
 
 val millVers = ops.StringOps((home / "mill-version.txt").readLineStream.take(1).toISZ(0)).split(c => c.isWhitespace)
-assert(millVers.size == 1 || millVers.size == 3)
+assert(millVers.size === 1 || millVers.size === 3)
 val millRel = millVers(0)
 val (millN, millHash): (String, String) = if (millVers.size != 1) (millVers(1), millVers(2)) else ("", "")
 val currVer = st"${(millVers, "-")}-${sireumModule.lastModified}-${buildCmd.lastModified}".render
@@ -159,7 +159,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     return (c: U8) => {
       if (c == u8"0xA") {
         lines = lines + 1
-        if (lines == n) {
+        if (lines === n) {
           lines = 0
           F
         } else {
@@ -247,7 +247,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
     for (e <- headerStream) {
       if (e == u8"0xA") {
         lines = lines + 1
-        if (lines == n) {
+        if (lines === n) {
           return i
         }
       }
@@ -321,7 +321,7 @@ def dev(): Unit = {
   }
   println("Building mill dev ...")
   (home / "git").removeAll()
-  if (millHash == "") {
+  if (millHash === "") {
     println(s"Cloning mill $millRel ...")
     Os.proc(ISZ("git", "clone", "--branch", millRel, "https://github.com/lihaoyi/mill", "git")).at(home).runCheck()
   } else {
