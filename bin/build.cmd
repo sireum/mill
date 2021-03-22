@@ -50,29 +50,16 @@ exit /B %errorlevel%
 import org.sireum._
 
 
-def usage(): Unit = {
-  println("Mill /build")
-  println("Usage: [ dev ]")
-}
-
-
-var isDev = F
-if (Os.cliArgs.size > 1) {
-  usage()
-  Os.exit(0)
+if (Os.cliArgs.size >= 1) {
+  eprintln(st"Unrecognized command(s): ${(Os.cliArgs, " ")}".render)
+  Os.exit(-1)
 } else if (Os.cliArgs.size === 1) {
-  if (Os.cliArgs(0) === "dev") {
-    isDev = T
-  } else {
-    usage()
-    eprintln(s"Unrecognized command: ${Os.cliArgs(0)}")
-    Os.exit(-1)
-  }
+
 }
 
 val homeBin: Os.Path = Os.slashDir
 val home = homeBin.up
-val z7: String = {
+val z7: Os.Path = {
   val (plat, exe): (String, String) = Os.kind match {
     case Os.Kind.Mac => ("mac", "7za")
     case Os.Kind.Linux => ("linux", "7za")
@@ -81,13 +68,13 @@ val z7: String = {
     case _ => ("unsupported", "")
   }
   val f = home.up / "bin" / plat / exe
-  if (f.exists) f.value else "7z"
+  if (f.exists) f else Os.path("7z")
 }
 
 def checkDeps(): Unit = {
   var missing = ISZ[String]()
-  if (isDev && !Os.proc(ISZ(z7)).run().ok) {
-    missing = missing :+ z7
+  if (!Os.proc(ISZ(z7.string)).run().ok) {
+    missing = missing :+ z7.string
   }
   if (!Os.proc(ISZ("git", "--version")).run().ok) {
     missing = missing :+ "git"
@@ -97,7 +84,6 @@ def checkDeps(): Unit = {
     Os.exit(-1)
   }
 }
-checkDeps()
 
 val sireumModule = home / "sireum" / "src" / "org" / "sireum" / "mill" / "SireumModule.scala"
 val buildCmd = home / "bin" / "build.cmd"
@@ -132,7 +118,7 @@ if (update) {
   millBatch.removeAll()
   millSh.removeAll()
 } else {
-  if (!isDev || millSh.exists) {
+  if (millSh.exists) {
     Os.exit(0)
   }
 }
@@ -144,7 +130,7 @@ def downloadMillRelease(): Unit = {
   }
   if (!millRelease.exists) {
     println(s"Please wait while downloading mill $millVersion ...")
-    millRelease.downloadFrom(s"https://github.com/lihaoyi/mill/releases/download/$millRel/$millVersion-assembly")
+    millRelease.downloadFrom(s"https://github.com/com-lihaoyi/mill/releases/download/$millRel/$millVersion-assembly")
     millRelease.chmod("+x")
     println()
   }
@@ -283,6 +269,13 @@ def standalone(): Unit = {
     return
   }
 
+  val upx = home.up / "bin" / "mac" / "upx"
+  if (Os.kind == Os.Kind.Mac && z7.name == "7za") {
+    Os.proc(ISZ(upx.string, "-d", z7.string)).runCheck()
+  }
+
+  checkDeps()
+
   println("Building mill-standalone ...")
 
   println("Building SireumModule ...")
@@ -293,7 +286,7 @@ def standalone(): Unit = {
   val temp = home / "temp"
   temp.removeAll()
   temp.mkdirAll()
-  Os.proc(ISZ(z7, "x", (home / "out" / "sireum" / "jar" / "dest" / "out.jar").string)).at(temp).runCheck()
+  Os.proc(ISZ(z7.string, "x", (home / "out" / "sireum" / "jar" / "dest" / "out.jar").string)).at(temp).runCheck()
   (temp / "META-INF").removeAll()
   val manifest = temp / "META-INF" / "MANIFEST.MF"
   manifest.removeAll()
@@ -306,11 +299,15 @@ def standalone(): Unit = {
   millJar.removeAll()
   millRelease.copyTo(millJar)
   val files: ISZ[String] = for (p <- temp.list) yield p.name
-  Os.proc(ISZ[String](z7, "a", millJar.string) ++ files).at(temp).runCheck()
+  Os.proc(ISZ[String](z7.string, "a", millJar.string) ++ files).at(temp).runCheck()
   temp.removeAll()
   madeInteractive(millJar, millStandaloneBatch, millStandaloneSh)
   millJar.removeAll()
   ver.write(currVer)
+
+  if (Os.kind == Os.Kind.Mac && z7.name == "7za") {
+    Os.proc(ISZ("git", "checkout", "7za")).at(upx.up).runCheck()
+  }
 }
 
 
@@ -323,10 +320,10 @@ def dev(): Unit = {
   (home / "git").removeAll()
   if (millHash === "") {
     println(s"Cloning mill $millRel ...")
-    Os.proc(ISZ("git", "clone", "--branch", millRel, "https://github.com/lihaoyi/mill", "git")).at(home).runCheck()
+    Os.proc(ISZ("git", "clone", "--branch", millRel, "https://github.com/com-lihaoyi/mill", "git")).at(home).runCheck()
   } else {
     println(s"Cloning mill $millVersion ...")
-    Os.proc(ISZ("git", "clone", "--branch", millRel, "https://github.com/lihaoyi/mill", "git")).at(home).runCheck()
+    Os.proc(ISZ("git", "clone", "--branch", millRel, "https://github.com/com-lihaoyi/mill", "git")).at(home).runCheck()
     Os.proc(ISZ("git", "reset", "--hard", millHash)).at(home / "git").runCheck()
   }
   Os.proc(ISZ("git", "config", "core.filemode", "false")).at(home / "git").runCheck()
@@ -352,9 +349,4 @@ def dev(): Unit = {
 }
 
 downloadMillRelease()
-
-if (Os.cliArgs.isEmpty) {
-  standalone()
-} else {
-  dev()
-}
+standalone()
