@@ -150,7 +150,7 @@ object SireumModule {
   }
 
   private def property(key: String): String = {
-    val value = properties.getProperty(key)
+    val value = properties.getProperty(key.replace(':', '%'))
     if (value == null) {
       throw new Error(
         s"Need to supply property '$key' in '${propertiesFile.getCanonicalPath}'.")
@@ -158,37 +158,37 @@ object SireumModule {
     value
   }
 
-  lazy val scalaVersion = property("org.sireum.version.scala")
+  lazy val scalaVersion = property("org.scala-lang:scala-compiler:")
 
-  lazy val scalacPluginVersion = property("org.sireum.version.scalac-plugin")
+  lazy val scalaTestVersion = property("org.scalatest::scalatest::")
 
-  lazy val scalaJsVersion = property("org.sireum.version.scalajs")
+  lazy val asmVersion = property("org.ow2.asm:asm:")
 
-  lazy val scalaTestVersion = property("org.sireum.version.scalatest")
+  lazy val diffVersion = property("com.sksamuel.diff:diff:")
 
-  lazy val scalaMetaVersion = property("org.sireum.version.scalameta")
+  lazy val githubVersion = property("org.kohsuke:github-api:")
 
-  lazy val diffVersion = property("org.sireum.version.diff")
+  lazy val java8CompatVersion = property("org.scala-lang.modules::scala-java8-compat:")
 
-  lazy val scalaJsDomVersion = property("org.sireum.version.scalajsdom")
+  lazy val javaFxVersion = property("org.openjfx:javafx:")
 
-  lazy val scalaJsJQueryVersion = property("org.sireum.version.scalajsjquery")
+  lazy val nuProcessVersion = property("com.zaxxer:nuprocess:")
 
-  lazy val scalaTagsVersion = property("org.sireum.version.scalatags")
+  lazy val osLibVersion = property("com.lihaoyi::os-lib:")
 
-  lazy val parCollectionVersion = property("org.sireum.version.parcollection")
+  lazy val parCollectionVersion = property("org.scala-lang.modules::scala-parallel-collections:")
 
-  lazy val java8CompatVersion = property("org.sireum.version.java8compat")
+  lazy val scalacPluginVersion = property("org.sireum::scalac-plugin:")
 
-  lazy val osLibVersion = property("org.sireum.version.os-lib")
+  lazy val scalaJsDomVersion = property("org.scala-js::scalajs-dom::")
 
-  lazy val nuProcessVersion = property("org.sireum.version.nuprocess")
+  lazy val scalaJsJQueryVersion = property("be.doraene::scalajs-jquery::")
 
-  lazy val githubVersion = property("org.sireum.version.github")
+  lazy val scalaMetaVersion = property("org.scalameta::scalameta::")
 
-  lazy val javaFxVersion = property("org.sireum.version.javafx")
+  lazy val scalaTagsVersion = property("com.lihaoyi::scalatags::")
 
-  lazy val asmVersion = property("org.sireum.version.asm")
+  lazy val scalaJsVersion = property("org.scala-js::scalajs-compiler:")
 
   sealed trait Project
 
