@@ -158,7 +158,7 @@ object SireumModule {
     value
   }
 
-  lazy val scalaVersion = property("org.scala-lang:scala-compiler:")
+  lazy val scalaVersion = property("org.scala-lang:scala-library:")
 
   lazy val scalaTestVersion = property("org.scalatest::scalatest::")
 
