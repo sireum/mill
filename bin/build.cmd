@@ -271,7 +271,7 @@ def standalone(): Unit = {
 
   val upx = home.up / "bin" / "mac" / "upx"
   if (Os.kind == Os.Kind.Mac && z7.name == "7za") {
-    Os.proc(ISZ(upx.string, "-d", z7.string)).runCheck()
+    Os.proc(ISZ(upx.string, "-d", z7.string)).run()
   }
 
   checkDeps()
