@@ -190,7 +190,7 @@ object SireumModule {
 
   lazy val scalaTagsVersion = property("com.lihaoyi::scalatags::")
 
-  lazy val scalaJsVersion = property("org.scala-js::scalajs-compiler:")
+  lazy val scalaJsVersion = property("org.scala-js:::scalajs-compiler:")
 
   sealed trait Project
 
