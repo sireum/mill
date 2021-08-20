@@ -10,7 +10,7 @@ ease building Sireum modules and with IntelliJ support for SireumModule.
 ## Standalone Version
 
 Based on mill releases. 
-Latest version is available [here](http://files.sireum.org/mill-standalone).
+Latest version is available [here](https://github.com/sireum/releases/releases/download/mill/mill).
 
 To build:
 
