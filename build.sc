@@ -4,7 +4,7 @@ import ammonite.ops._
 
 object sireum extends ScalaModule {
 
-  final override def scalaVersion = T { "2.13.5" }
+  final override def scalaVersion = T { "2.13.6" }
 
   def version = T.sources {
     pwd / "mill-version.txt"
