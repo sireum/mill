@@ -192,6 +192,11 @@ object SireumModule {
 
   lazy val scalaJsVersion = property("org.scala-js:::scalajs-compiler:")
 
+  lazy val antlr3Version = property("org.antlr:antlr-runtime:")
+
+  lazy val automatonVersion = property("org.sireum:automaton:")
+
+
   sealed trait Project
 
   object Project {
