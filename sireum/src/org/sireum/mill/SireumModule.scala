@@ -28,7 +28,7 @@ import mill._
 import mill.scalalib._
 import mill.scalajslib._
 import mill.scalalib.publish._
-import ammonite.ops._
+import os._
 
 trait SireumModule extends mill.scalalib.JavaModule {
 
@@ -96,17 +96,17 @@ object SireumModule {
   }
 
   def publishVersion: String =
-    try %%('git, 'log, "-1", "--date=format:%Y%m%d", "--pretty=format:4.%cd.%h")(pwd).out.lines.head.trim catch {
+    try proc('git, 'log, "-1", "--date=format:%Y%m%d", "--pretty=format:4.%cd.%h", pwd).call().out.lines.head.trim catch {
       case _: Throwable => "SNAPSHOT"
     }
 
   def jitpackVersion: String =
-    try %%('git, 'log, "-1", "--format=%H")(pwd).out.lines.head.trim.substring(0, 10) catch {
+    try proc('git, 'log, "-1", "--format=%H", pwd).call().out.lines.head.trim.substring(0, 10) catch {
       case _: Throwable => "SNAPSHOT"
     }
 
   def ghLatestCommit(owner: String, repo: String, branch: String): String = {
-    val out = %%('git, "ls-remote", s"https://github.com/$owner/$repo.git")(pwd).out
+    val out = proc('git, "ls-remote", s"https://github.com/$owner/$repo.git", pwd).call().out
     for (line <- out.lines if line.contains(s"refs/heads/$branch"))
       return line.substring(0, 10)
     throw new RuntimeException(s"Could not determine latest commit for https://github.com/$owner/$repo.git branch $branch!")
@@ -140,13 +140,13 @@ object SireumModule {
          |    coursier.maven.MavenRepository("https://jitpack.io/")
          |  )
          |}""".stripMargin)
-    cp(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
+    copy(Path(propertiesFile.getAbsoluteFile), dir / propertiesFile.getName)
     if (scala.util.Properties.isWin)
-      %("cmd", "/c", new java.io.File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI).getCanonicalPath,
-        "jptest.compile")(dir)
+      proc("cmd", "/c", new java.io.File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI).getCanonicalPath,
+        "jptest.compile", dir).call()
     else
-      %("sh", new java.io.File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI).getCanonicalPath,
-        "jptest.compile")(dir)
+      proc("sh", new java.io.File(getClass.getProtectionDomain.getCodeSource.getLocation.toURI).getCanonicalPath,
+        "jptest.compile", dir).call()
   }
 
   private def property(key: String): String = {
@@ -361,8 +361,8 @@ object SireumModule {
           case g => g.toSeq
         }
         val ad = group.foldLeft(T.ctx().dest)((a, b) => a / b) / pa.meta.id / pa.meta.version
-        mkdir(ad)
-        for ((f, n) <- pa.payload) cp(f.path, ad / n)
+        makeDir(ad)
+        for ((f, n) <- pa.payload) copy(f.path, ad / n)
       }
 
       override def pomSettings = PomSettings(
