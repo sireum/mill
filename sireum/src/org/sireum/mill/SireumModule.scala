@@ -39,7 +39,8 @@ trait SireumModule extends mill.scalalib.JavaModule {
 
   final def scalacOpts =
     Seq(
-      "-target:jvm-1.8",
+      "-release",
+      "8",
       "-deprecation",
       "-Yrangepos",
       "-Ydelambdafy:method",
