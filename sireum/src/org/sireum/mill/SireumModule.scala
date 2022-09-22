@@ -196,6 +196,7 @@ object SireumModule {
 
   lazy val automatonVersion = property("org.sireum:automaton:")
 
+  lazy val presentasiJfxVersion = property("org.sireum:presentasi-jfx:")
 
   sealed trait Project
 
