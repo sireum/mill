@@ -199,6 +199,8 @@ object SireumModule {
 
   lazy val presentasiJfxVersion = property("org.sireum:presentasi-jfx:")
 
+  lazy val scalafmtVersion = property("org.scalameta::scalafmt-cli:")
+
   sealed trait Project
 
   object Project {
