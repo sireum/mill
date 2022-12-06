@@ -165,8 +165,6 @@ object SireumModule {
 
   lazy val asmVersion = property("org.ow2.asm:asm:")
 
-  lazy val coursierVersion = property("io.get-coursier::coursier:")
-
   lazy val diffVersion = property("com.sksamuel.diff:diff:")
 
   lazy val githubVersion = property("org.kohsuke:github-api:")
@@ -200,6 +198,8 @@ object SireumModule {
   lazy val presentasiJfxVersion = property("org.sireum:presentasi-jfx:")
 
   lazy val scalafmtVersion = property("org.scalameta::scalafmt-cli:")
+
+  lazy val apacheCompressVersion = property("org.apache.commons:commons-compress:")
 
   sealed trait Project
 
