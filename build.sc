@@ -3,7 +3,7 @@ import mill.scalalib._
 
 object sireum extends ScalaModule {
 
-  final override def scalaVersion = T { "2.13.10" }
+  final override def scalaVersion = T { "2.13.12" }
 
   def version = T.sources {
     os.pwd / "mill-version.txt"
