@@ -35,7 +35,7 @@ trait SireumModule extends mill.scalalib.JavaModule {
   final def scalaVer = SireumModule.scalaVersion
 
   final def javacOpts =
-    Seq("-source", "1.8", "-target", "1.8", "-encoding", "utf8", "-XDignore.symbol.file", " -Xlint:-options",
+    Seq("-source", "1.8", "-target", "1.8", "-encoding", "utf8", "-XDignore.symbol.file", "-Xlint:-options",
       "-Xlint:deprecation", "-proc:none")
 
   final def scalacOpts =
