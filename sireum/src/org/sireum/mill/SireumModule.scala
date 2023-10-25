@@ -35,7 +35,8 @@ trait SireumModule extends mill.scalalib.JavaModule {
   final def scalaVer = SireumModule.scalaVersion
 
   final def javacOpts =
-    Seq("-source", "1.8", "-target", "1.8", "-encoding", "utf8")
+    Seq("-source", "1.8", "-target", "1.8", "-encoding", "utf8", "-XDignore.symbol.file", " -Xlint:-options",
+      "-Xlint:deprecation", "-proc:none")
 
   final def scalacOpts =
     Seq(
@@ -192,6 +193,8 @@ object SireumModule {
   lazy val scalaJsVersion = property("org.scala-js:::scalajs-compiler:")
 
   lazy val antlr3Version = property("org.antlr:antlr-runtime:")
+
+  lazy val antlr4Version = property("org.antlr:antlr4-runtime:")
 
   lazy val automatonVersion = property("org.sireum:automaton:")
 
