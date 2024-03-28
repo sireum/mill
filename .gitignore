@@ -27,3 +27,4 @@ target
 /lib
 *.cmd.jar
 *.cmd.com
+/bin/init.bat
