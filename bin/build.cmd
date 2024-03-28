@@ -201,7 +201,7 @@ def madeInteractive(millJar: Os.Path, millBat: Os.Path, mill: Os.Path): Unit = {
   val batchHeader3: String = ops.StringOps(conversions.String.fromU8is(headerStream.dropWhile(linesF(61)).takeWhile(linesF(3)).toISZ)).trim
   val batchHeader4: String = ops.StringOps(ops.StringOps(ops.StringOps(
     conversions.String.fromU8is(headerStream.dropWhile(linesF(80)).takeWhile(linesF(2)).toISZ)).
-    replaceAllLiterally("mill.main.client.MillClientMain %*", "-Djansi.mode=force mill.MillMain %*")).replaceAllLiterally(" !mill_jvm_opts!", "")).trim
+    replaceAllLiterally("mill.main.client.MillClientMain %*", "-Dorg.fusesource.jansi.Ansi.disable=true mill.MillMain %*")).replaceAllLiterally(" !mill_jvm_opts!", "")).trim
   val batchHeader5: String = "\r\nendlocal\r\nexit /B %errorlevel%\r\n"
 //  println("Bash header 1")
 //  println(bashHeader1)
